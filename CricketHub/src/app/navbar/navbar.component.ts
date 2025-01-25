@@ -20,6 +20,7 @@ import { CommonModule } from '@angular/common';
         <li><a [class.active]="isActive('/organizer-dashboard')" (click)="organize()">Organize</a></li>
         <li><a [class.active]="isActive('/fans-dashboard')" (click)="fans()">Live</a></li>
         <li><a [class.active]="isActive('/training')" (click)="train()">Training</a></li>
+        <li><a [class.active]="isActive('/leaderboard')" (click)="leaderboard()">leaderboard</a></li>
         <li><a [class.active]="isActive('/login')" (click)="logout()" class="logout">Logout</a></li>
       </ul>
     </nav>
@@ -115,6 +116,9 @@ import { CommonModule } from '@angular/common';
   ],
 })
 export class NavbarComponent {
+leaderboard() {
+  this.router.navigate(['/leaderboard']);
+}
   constructor(private router: Router) {}
 
   train() {

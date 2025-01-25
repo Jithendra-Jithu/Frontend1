@@ -12,6 +12,7 @@ import { MatchStatsComponent } from './match-stats/match-stats.component';
 import { FansDashboardComponent } from './fans-dashboard/fans-dashboard.component';
 import { TrainingComponent } from './training/training.component';
 import { CricplayComponent } from './cricplay/cricplay.component';
+import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 
 
 export const routes: Routes = [
@@ -30,6 +31,7 @@ export const routes: Routes = [
   { path: 'create-tournament', component: CreateTournamentComponent },
   { path: 'training', component: TrainingComponent },
   { path: 'crickplay', component:CricplayComponent },
+  { path: 'leaderboard',component: LeaderboardComponent },
   { path: 'fans-dashboard',component: FansDashboardComponent}
   
 ];
