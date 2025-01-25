@@ -1,0 +1,57 @@
+<!-- <div class="header bg-light d-flex justify-content-between align-items-center p-3 border-bottom">
+    <img src="assets/image/logo_image.png" alt="Logo" class="logo">
+    <button class="btn btn-danger logout-btn">Logout</button>
+</div> -->
+<app-navbar></app-navbar>
+<div class="container py-4">
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs justify-content-center mb-4">
+        <li class="nav-item">
+            <button
+                class="nav-link"
+                [class.active]="activeTab === 'ongoing'"
+                (click)="activeTab = 'ongoing'">
+                Ongoing
+            </button>
+        </li>
+        <li class="nav-item">
+            <button
+                class="nav-link"
+                [class.active]="activeTab === 'upcoming'"
+                (click)="activeTab = 'upcoming'">
+                Upcoming
+            </button>
+        </li>
+        <li class="nav-item">
+            <button
+                class="nav-link"
+                [class.active]="activeTab === 'completed'"
+                (click)="activeTab = 'completed'">
+                Completed
+            </button>
+        </li>
+    </ul>
+
+    <!-- Match Cards -->
+    <div class="row g-3">
+        <div *ngFor="let match of filteredMatches" class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <img [src]="matchImages[activeTab]" alt="Match Image" class="card-img-top match-image">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ match.name }}</h5>
+                    <p class="card-text">{{ match.location }}</p>
+                    <p class="card-text"><small class="text-muted">{{ match.date }}</small></p>
+                    <ng-container [ngSwitch]="activeTab">
+                        <button *ngSwitchCase="'ongoing'" class="btn btn-success btn-sm btn-live">Live</button>
+                        <p *ngSwitchCase="'upcoming'" class="text-warning fw-bold days-left">
+                            {{ calculateDaysLeft(match.date) }} days left for the match
+                        </p>
+                        <button *ngSwitchCase="'completed'" class="btn btn-primary btn-sm btn-overview" (click)="goToOverview()">Overview</button>
+
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<app-footer></app-footer>

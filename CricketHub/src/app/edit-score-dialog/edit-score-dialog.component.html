@@ -1,0 +1,24 @@
+<h2 mat-dialog-title class="text-center text-primary mb-4 font-weight-bold">Edit Score</h2>
+
+<mat-dialog-content>
+  <div class="dialog-content">
+    <p class="text-center mb-3 font-italic text-muted">Editing score for <b>{{ data.name }}</b></p>
+    <div class="form-group">
+      <label for="scoreInput" class="font-weight-bold text-dark">{{ data.fieldToEdit === 'runs' ? 'Runs' : 'Wickets' }}</label>
+      <input
+        id="scoreInput"
+        matInput
+        type="number"
+        [(ngModel)]="data[data.fieldToEdit]"
+        class="form-control form-control-lg rounded-lg border-0 shadow-sm p-3"
+        placeholder="Enter score"
+        min="0"
+      />
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="d-flex justify-content-between p-3">
+  <button mat-button class="btn btn-outline-danger px-5 rounded-lg shadow-sm transition-all" (click)="onCancel()">Cancel</button>
+  <button mat-button color="primary" class="btn btn-success px-5 rounded-lg shadow-sm transition-all" (click)="onUpdate()">Update</button>
+</mat-dialog-actions>

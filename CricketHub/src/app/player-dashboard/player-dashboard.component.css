@@ -1,0 +1,156 @@
+.dashboard-container {
+  margin: 20px;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background-color: #3f51b5;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  height: 50px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.search-bar {
+  width: 50%;
+  background-color: #ffffff;
+  border-radius: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.search-bar mat-form-field {
+  width: 100%;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.search-bar button {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-bar button:hover {
+  background-color: #303f9f;
+}
+
+.dashboard-title {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 2rem;
+  color: #3f51b5;
+}
+
+.dropdown {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.dashboard-table {
+  width: 80%;
+  margin: 20px auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.dashboard-table th {
+  background-color: #71b891;
+  color: white;
+  font-weight: 500;
+}
+
+.dashboard-table td {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.dashboard-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dashboard-table tr:hover td {
+  background-color: #f5f5f5;
+}
+
+.matches-title {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 2rem;
+  color: #3f51b5;
+}
+
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.match-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.match-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.match-card img {
+  border-radius: 8px 8px 0 0;
+}
+
+.match-card h3 {
+  margin: 10px 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.match-card p {
+  margin: 5px 0;
+  color: #666;
+}
