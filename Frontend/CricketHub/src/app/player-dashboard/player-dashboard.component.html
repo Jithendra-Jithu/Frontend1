@@ -1,29 +1,24 @@
 <app-navbar></app-navbar>
 
-
-
 <div class="dashboard-container">
-  
-
-
-<!-- Search Bar Section -->
-<div class="search-bar-container">
-  <div class="search-bar">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Search by match code</mat-label>
-      <input matInput [(ngModel)]="searchCode" />
-    </mat-form-field>
-    <button mat-icon-button (click)="searchMatch()">
-      <mat-icon>search</mat-icon>
-    </button>
+  <!-- Search Bar Section -->
+  <div class="search-bar-container">
+    <div class="search-bar">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Search by match code</mat-label>
+        <input matInput [(ngModel)]="searchCode" />
+      </mat-form-field>
+      <button mat-icon-button (click)="searchMatch()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
   </div>
-</div>
 
   <!-- Dashboard Title -->
   <h2 class="dashboard-title">DASHBOARD</h2>
 
-  <!-- Dropdown for Statistics -->
-  <div class="dropdown">
+   <!-- Dropdown for Statistics -->
+   <div class="dropdown">
     <mat-form-field appearance="outline">
       <mat-label>Select Statistics</mat-label>
       <mat-select (selectionChange)="onStatisticsChange($event)" [value]="isBatting ? 'batting' : 'bowling'">
@@ -66,8 +61,12 @@
   <!-- Available Matches Section -->
   <h2 class="matches-title">AVAILABLE MATCHES</h2>
   <div class="matches-grid">
-    <mat-card *ngFor="let match of matches" class="match-card mat-elevation-z4" [@fadeIn]>
-      <img mat-card-image src="assets/image/ground.jpg" alt="Match Image" />
+    <mat-card
+      *ngFor="let match of matches"
+      class="match-card mat-elevation-z4"
+      [@fadeIn]
+    >
+      <img mat-card-image [src]="match.image" alt="Match Image" />
       <mat-card-content>
         <h3>{{ match.groundName }}</h3>
         <p>

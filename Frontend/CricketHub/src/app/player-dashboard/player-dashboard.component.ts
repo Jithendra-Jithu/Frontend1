@@ -12,6 +12,16 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
+
+type Match = {
+  groundName: string;
+  location: string;
+  date: Date;
+  id: number;
+  code: string;
+  image?: string; // Add image property
+};
+
 @Component({
   selector: 'app-player-dashboard',
   standalone: true,
@@ -51,7 +61,7 @@ export class PlayerDashboardComponent {
     totalWickets: 250,
   };
 
-  matches = [
+  matches: Match[] = [
     {
       groundName: 'Eden Gardens',
       location: 'Kolkata',
@@ -67,29 +77,40 @@ export class PlayerDashboardComponent {
       code: 'M02',
     },
     {
-      groundName: 'Wankhede Stadium',
-      location: 'Mumbai',
-      date: new Date('2025-02-10'),
-      id: 2,
-      code: 'M02',
+      groundName: 'Chinnaswamy Stadium',
+      location: 'Bangalore',
+      date: new Date('2025-03-15'),
+      id: 3,
+      code: 'M03',
     },
     {
-      groundName: 'Wankhede Stadium',
-      location: 'Mumbai',
-      date: new Date('2025-02-10'),
-      id: 2,
-      code: 'M02',
+      groundName: 'MA Chidambaram Stadium',
+      location: 'Chennai',
+      date: new Date('2025-04-05'),
+      id: 4,
+      code: 'M04',
     },
     {
-      groundName: 'Wankhede Stadium',
-      location: 'Mumbai',
-      date: new Date('2025-02-10'),
-      id: 2,
-      code: 'M02',
-    }
+      groundName: 'Feroz Shah Kotla Ground',
+      location: 'Delhi',
+      date: new Date('2025-05-20'),
+      id: 5,
+      code: 'M05',
+    },
   ];
 
-  constructor(private router: Router) {}
+  images = [
+    'assets/image/player1.avif',
+    'assets/image/player5.avif',
+    'assets/image/player3.jpg',
+    'assets/image/player4.jpg',
+    'assets/image/player2.jpg',
+  ];
+
+  constructor(private router: Router) {
+    this.shuffleImages();
+    this.assignImagesToCards();
+  }
 
   getDisplayedColumns(): string[] {
     return this.isBatting
@@ -124,5 +145,24 @@ export class PlayerDashboardComponent {
     } else {
       console.log('Please enter a match code');
     }
+  }
+
+  shuffleImages(): void {
+    for (let i = this.images.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.images[i], this.images[j]] = [this.images[j], this.images[i]];
+    }
+  }
+
+  assignImagesToCards(): void {
+    let previousImage = '';
+    this.matches.forEach((match, index) => {
+      let selectedImage;
+      do {
+        selectedImage = this.images[index % this.images.length];
+      } while (selectedImage === previousImage);
+      match.image = selectedImage;
+      previousImage = selectedImage;
+    });
   }
 }
