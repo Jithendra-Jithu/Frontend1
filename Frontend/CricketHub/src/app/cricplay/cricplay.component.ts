@@ -17,4 +17,7 @@ export class CricplayComponent {
 goToLogin() {
   this.router.navigate(['/login']);
 }
+goToAdmin(){
+  this.router.navigate(['/adminlogin']);
+}
 }

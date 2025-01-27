@@ -13,6 +13,9 @@ import { FansDashboardComponent } from './fans-dashboard/fans-dashboard.componen
 import { TrainingComponent } from './training/training.component';
 import { CricplayComponent } from './cricplay/cricplay.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
+import { AdminLoginComponent } from './adminlogin/adminlogin.component';
+
+import { PlayerSummaryComponent } from './player-summary/player-summary.component';
 
 
 export const routes: Routes = [
@@ -32,6 +35,8 @@ export const routes: Routes = [
   { path: 'training', component: TrainingComponent },
   { path: 'crickplay', component:CricplayComponent },
   { path: 'leaderboard',component: LeaderboardComponent },
+  { path: 'adminlogin', component: AdminLoginComponent },
+  { path: 'player-summary',component: PlayerSummaryComponent},
   { path: 'fans-dashboard',component: FansDashboardComponent}
   
 ];
