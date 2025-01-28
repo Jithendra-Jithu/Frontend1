@@ -44,12 +44,18 @@
           <!-- Status and Overview Buttons -->
           <button
             class="action-btn status-btn"
-            [ngClass]="{ disabled: match.status !== 'START' }"
+            [ngClass]="{ 'disabled': match.status !== 'Upcoming' }"
             (click)="handleStatusClick(match)"
           >
-            {{ match.status }}
+            {{ match.status === 'Upcoming' ? 'START' : match.status }}
           </button>
-          <button class="action-btn overview-btn" (click)="handleOverviewClick(match)">Overview</button>
+          <button 
+            class="action-btn overview-btn" 
+            [disabled]="match.status !== 'Completed'"
+            (click)="handleOverviewClick(match)"
+          >
+            Overview
+          </button>
         </div>
       </div>
     </div>

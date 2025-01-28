@@ -34,8 +34,9 @@ export class LoginService {
   }
 
   // Clear stored data on logout
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-  }
+  // logout(): void {
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('userId');
+  //   localStorage.clear();
+  // }
 }

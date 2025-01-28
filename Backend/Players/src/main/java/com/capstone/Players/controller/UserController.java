@@ -16,6 +16,7 @@ import com.capstone.Players.dto.BattingStatsDTO;
 import com.capstone.Players.dto.BowlingStatsDTO;
 import com.capstone.Players.dto.LoginRequest;
 import com.capstone.Players.dto.LoginResponse;
+import com.capstone.Players.dto.OrganizerDTO;
 import com.capstone.Players.dto.PlayerStatsDTO;
 import com.capstone.Players.model.User;
 import com.capstone.Players.service.JwtService;
@@ -118,6 +119,11 @@ return userService.getAllPlayerStats()
                     }
                 }))
             .defaultIfEmpty(ResponseEntity.status(401).body(null));
+    }
+
+    @GetMapping("/getOrganizerStats/{userId}")
+    public Mono<OrganizerDTO> getOrganizerStats(@PathVariable String userId) {
+        return userService.getOrganizerStats(userId);
     }
 
 }

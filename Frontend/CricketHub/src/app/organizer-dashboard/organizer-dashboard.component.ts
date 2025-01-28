@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { OrganizeService } from '../services/organize.service';
 
 type Match = {
   title: string;
@@ -10,6 +11,7 @@ type Match = {
   date: Date;
   status: string;
   image?: string; // Add image property
+  id: number;
 };
 
 @Component({
@@ -20,50 +22,14 @@ type Match = {
 })
 export class OrganizerDashboardComponent implements OnInit {
   organizer = {
-    name: 'Jashwanth',
+    userId: '',
+    name: '',
     matchesOrganized: 0,
-    sponsors: 2,
-    supportStaff: 15,
+    sponsors: 0,
+    supportStaff: 0,
   };
 
-  matches: Match[] = [
-    {
-      title: 'Bharath Box Cricket',
-      location: 'Shapur, Hyderabad',
-      date: new Date('2024-01-21'),
-      status: 'START',
-    },
-    {
-      title: 'Srujana Cricket Ground',
-      location: 'Kukatpally, Hyderabad',
-      date: new Date('2024-01-20'),
-      status: 'UPCOMING',
-    },
-    {
-      title: 'Elite Cricket Club',
-      location: 'Gachibowli, Hyderabad',
-      date: new Date('2024-01-19'),
-      status: 'ENDED',
-    },
-    {
-      title: 'Legends Cricket Ground',
-      location: 'Kondapur, Hyderabad',
-      date: new Date('2024-01-25'),
-      status: 'ENDED',
-    },
-    {
-      title: 'Thunderstruck Arena',
-      location: 'Banjara Hills, Hyderabad',
-      date: new Date('2024-03-01'),
-      status: 'UPCOMING',
-    },
-    {
-      title: 'Stadium Elite',
-      location: 'Jubilee Hills, Hyderabad',
-      date: new Date('2024-03-15'),
-      status: 'START',
-    },
-  ];
+  matches: Match[] = [];
 
   images = [
     'assets/image/org1.png',
@@ -75,32 +41,65 @@ export class OrganizerDashboardComponent implements OnInit {
     'assets/image/org7.png',
   ];
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private organizeService: OrganizeService
+  ) {
     this.shuffleImages();
-    this.assignImagesToCards();
   }
 
   ngOnInit(): void {
-    // Fetch organizer details from the backend (mocked for now)
-    // Implement a service call here in the future.
-  }
+    // Get userId from authentication service or localStorage
+    const userId = localStorage.getItem('userId') || '';
+    
+    // Fetch organizer details
+    this.organizeService.getOrganizerDetails(userId).subscribe({
+      next: (data) => {
+        this.organizer = {
+          userId: data.userId,
+          name: data.userName,
+          matchesOrganized: data.numberOfMatchesOrganized,
+          sponsors: data.sponsors,
+          supportStaff: data.supportStaff
+        };
+      },
+      error: (error) => console.error('Error fetching organizer details:', error)
+    });
 
-  logout(): void {
-    this.router.navigate(['/login']);
-    alert('Confirm Log out!');
+    // Fetch organizer's matches
+    this.organizeService.getOrganizerMatches(userId).subscribe({
+      next: (matches) => {
+        this.matches = matches.map(match => ({
+          title: match.title,
+          location: match.location,
+          date: new Date(match.date),
+          status: match.status,
+          id: match.id
+        }));
+        this.assignImagesToCards();
+      },
+      error: (error) => console.error('Error fetching matches:', error)
+    });
   }
 
   handleStatusClick(match: Match): void {
-    if (match.status === 'START') {
-      this.router.navigate(['/match-stats'], { queryParams: { matchTitle: match.title } });
+    if (match.status === 'Upcoming') {
+      // Call API to start match
+      this.organizeService.updateMatchStatus(match.id.toString(), 'Ongoing').subscribe({
+        next: () => {
+          match.status = 'Ongoing';
+          this.router.navigate(['/match-stats'], { queryParams: { matchId: match.id } });
+        },
+        error: (error: any) => console.error('Error starting match:', error)
+      });
     }
   }
 
   handleOverviewClick(match: Match): void {
-    if (match.status !== 'ENDED') {
-      alert('The match has not ended yet!');
+    if (match.status !== 'Completed') {
+      alert('Match has not ended yet!');
     } else {
-      this.router.navigate(['/match-overview'], { queryParams: { matchTitle: match.title } });
+      this.router.navigate(['/match-overview'], { queryParams: { matchId: match.id } });
     }
   }
 

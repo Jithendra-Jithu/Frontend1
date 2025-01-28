@@ -32,7 +32,7 @@
   <table mat-table [dataSource]="[playerData]" class="dashboard-table mat-elevation-z8">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let element">{{ element.playerName }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.userName }}</td>
     </ng-container>
     <ng-container matColumnDef="matchesPlayed">
       <th mat-header-cell *matHeaderCellDef>Matches Played</th>
@@ -40,11 +40,11 @@
     </ng-container>
     <ng-container matColumnDef="highScore" *ngIf="isBatting">
       <th mat-header-cell *matHeaderCellDef>High Score</th>
-      <td mat-cell *matCellDef="let element">{{ element.highestRuns }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.highestScore }}</td>
     </ng-container>
     <ng-container matColumnDef="totalRuns" *ngIf="isBatting">
       <th mat-header-cell *matHeaderCellDef>Total Runs</th>
-      <td mat-cell *matCellDef="let element">{{ element.totalRuns }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.totalScore }}</td>
     </ng-container>
     <ng-container matColumnDef="highestWickets" *ngIf="!isBatting">
       <th mat-header-cell *matHeaderCellDef>Highest Wickets</th>

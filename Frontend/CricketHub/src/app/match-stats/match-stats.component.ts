@@ -6,6 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { EditScoreDialogComponent } from '../edit-score-dialog/edit-score-dialog.component';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { MatchService } from '../services/match.service';
+import { ActivatedRoute } from '@angular/router';
+
 @Component({
   selector: 'app-match-stats',
   templateUrl: './match-stats.component.html',
@@ -41,9 +44,10 @@ export class MatchStatsComponent {
   inningsCompleted = false; // Tracks if the innings have been completed
   matchEnded = false; // Tracks if the match has ended
   winner = ''; // Stores the match winner
+  matchStarted: boolean = false;
  
 
-  constructor(private dialog: MatDialog,private router: Router) {}
+  constructor(private dialog: MatDialog,private router: Router, private matchService: MatchService, private route: ActivatedRoute) {}
 
   openEditDialog(player: any, fieldToEdit: 'runs' | 'wickets'): void {
     const dialogRef = this.dialog.open(EditScoreDialogComponent, {
@@ -80,11 +84,28 @@ export class MatchStatsComponent {
     }
   }
 
+  // Start the match
+  startMatch(): void {
+    const matchId = this.route.snapshot.queryParams['matchId'];
+    this.matchService.startMatch(matchId).subscribe({
+      next: () => {
+        this.matchStarted = true;
+      },
+      error: (error) => console.error('Error starting match:', error)
+    });
+  }
+
   // End the match
   endMatch(): void {
-    this.matchEnded = true;
-    this.calculateWinner();
-    this.router.navigate(['/organizer-dashboard']);
+    const matchId = this.route.snapshot.queryParams['matchId'];
+    this.matchService.updateMatchStatus(matchId.toString(), 'Completed').subscribe({
+      next: () => {
+        this.matchEnded = true;
+        this.calculateWinner();
+        this.router.navigate(['/organizer-dashboard']);
+      },
+      error: (error: any) => console.error('Error ending match:', error)
+    });
   }
 
   // Calculate the winner based on scores

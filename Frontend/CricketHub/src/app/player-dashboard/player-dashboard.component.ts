@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +12,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { PlayerService } from '../services/player.service';
+import { MatchService } from '../services/match.service';
+import { catchError, forkJoin, of } from 'rxjs';
 
 type Match = {
   groundName: string;
@@ -19,7 +22,7 @@ type Match = {
   date: Date;
   id: number;
   code: string;
-  image?: string; // Add image property
+  image?: string;
 };
 
 @Component({
@@ -49,55 +52,16 @@ type Match = {
     ]),
   ],
 })
-export class PlayerDashboardComponent {
+export class PlayerDashboardComponent implements OnInit, OnDestroy {
+  private refreshInterval: any;
+  private readonly REFRESH_INTERVAL = 30000; // 30 seconds
+
   searchCode: string = '';
   isBatting: boolean = true;
-  playerData = {
-    playerName: 'Jashwanth',
-    totalMatches: 50,
-    highestRuns: 120,
-    totalRuns: 4000,
-    highestWickets: 6,
-    totalWickets: 250,
-  };
-
-  matches: Match[] = [
-    {
-      groundName: 'Eden Gardens',
-      location: 'Kolkata',
-      date: new Date('2025-01-25'),
-      id: 1,
-      code: 'M01',
-    },
-    {
-      groundName: 'Wankhede Stadium',
-      location: 'Mumbai',
-      date: new Date('2025-02-10'),
-      id: 2,
-      code: 'M02',
-    },
-    {
-      groundName: 'Chinnaswamy Stadium',
-      location: 'Bangalore',
-      date: new Date('2025-03-15'),
-      id: 3,
-      code: 'M03',
-    },
-    {
-      groundName: 'MA Chidambaram Stadium',
-      location: 'Chennai',
-      date: new Date('2025-04-05'),
-      id: 4,
-      code: 'M04',
-    },
-    {
-      groundName: 'Feroz Shah Kotla Ground',
-      location: 'Delhi',
-      date: new Date('2025-05-20'),
-      id: 5,
-      code: 'M05',
-    },
-  ];
+  playerData: any = null;
+  matches: Match[] = [];
+  loading = true;
+  error: string | null = null;
 
   images = [
     'assets/image/player1.avif',
@@ -107,9 +71,90 @@ export class PlayerDashboardComponent {
     'assets/image/player2.jpg',
   ];
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private playerService: PlayerService,
+    private matchService: MatchService
+  ) {
     this.shuffleImages();
-    this.assignImagesToCards();
+  }
+
+  ngOnInit() {
+    // Initial load
+    this.loadDashboardData();
+
+    // Set up periodic refresh
+    this.refreshInterval = setInterval(() => {
+      this.refreshData();
+    }, this.REFRESH_INTERVAL);
+
+    // Subscribe to player updates
+    this.playerService.currentPlayer$.subscribe(player => {
+      if (player) {
+        this.playerData = player;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+  }
+
+  private refreshData() {
+    this.matchService.getAllMatches().pipe(
+      catchError(error => {
+        console.error('Error refreshing matches:', error);
+        return of([]);
+      })
+    ).subscribe(matches => {
+      if (matches) {
+        this.matches = matches;
+        localStorage.setItem('matches', JSON.stringify(matches));
+        this.assignImagesToCards();
+      }
+    });
+  }
+
+  loadDashboardData() {
+    this.loading = true;
+    this.error = null;
+
+    forkJoin({
+      player: this.playerService.getPlayerDetails().pipe(
+        catchError(error => {
+          console.error('Error loading player details:', error);
+          return of(null);
+        })
+      ),
+      matches: this.matchService.getAllMatches().pipe(
+        catchError(error => {
+          console.error('Error loading matches:', error);
+          return of([]);
+        })
+      )
+    }).subscribe({
+      next: (data) => {
+        if (data.player) {
+          this.playerData = data.player;
+          localStorage.setItem('playerData', JSON.stringify(data.player));
+        }
+
+        if (data.matches) {
+          this.matches = data.matches;
+          localStorage.setItem('matches', JSON.stringify(data.matches));
+          this.assignImagesToCards();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading dashboard data:', error);
+        this.error = 'Failed to load dashboard data';
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
   getDisplayedColumns(): string[] {
@@ -122,12 +167,16 @@ export class PlayerDashboardComponent {
     this.isBatting = event.value === 'batting';
   }
 
-  logout(): void {
-    this.router.navigate(['/login']);
-  }
 
   trackLocation(location: string): void {
-    console.log('Tracking location:', location);
+    this.matchService.getMatchesByLocation(location).subscribe({
+      next: (matches) => {
+        console.log('Matches at location:', matches);
+      },
+      error: (error) => {
+        console.error('Error tracking location:', error);
+      }
+    });
   }
 
   playerregistration(): void {
@@ -136,12 +185,18 @@ export class PlayerDashboardComponent {
 
   searchMatch(): void {
     if (this.searchCode) {
-      const match = this.matches.find((m) => m.code === this.searchCode);
-      if (match) {
-        console.log('Found match:', match);
-      } else {
-        console.log('Match not found');
-      }
+      this.matchService.getMatchByCode(this.searchCode).subscribe({
+        next: (match) => {
+          if (match) {
+            console.log('Found match:', match);
+          } else {
+            console.log('Match not found');
+          }
+        },
+        error: (error) => {
+          console.error('Error searching match:', error);
+        }
+      });
     } else {
       console.log('Please enter a match code');
     }

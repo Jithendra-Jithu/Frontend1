@@ -3,11 +3,19 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { CreatetournamentService } from '../services/createtournament.service';
+import { HttpClientModule } from '@angular/common/http';
+
 @Component({
   selector: 'app-create-tournament',
   standalone: true,
   templateUrl: './create-tournament.component.html',
-  imports: [CommonModule, ReactiveFormsModule,NavbarComponent],  // <-- Include ReactiveFormsModule here
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NavbarComponent,
+    HttpClientModule
+  ],
   styleUrls: ['./create-tournament.component.css']
 })
 export class CreateTournamentComponent {
@@ -15,14 +23,13 @@ export class CreateTournamentComponent {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private tournamentService: CreatetournamentService
   ) {
     this.tournamentForm = this.fb.group({
-      groundName: ['', Validators.required],
       location: ['', Validators.required],
       teamSize: ['', [Validators.required, Validators.min(1)]],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      date: ['', Validators.required],
       sponsors: ['', [Validators.required, Validators.min(1)]],
       supportStaff: ['', [Validators.required, Validators.min(1)]]
     });
@@ -30,16 +37,20 @@ export class CreateTournamentComponent {
 
   onSubmit() {
     if (this.tournamentForm.valid) {
-      // After form submission, redirect to organizer dashboard
-      this.router.navigate(['/organizer-dashboard']);
+      this.tournamentService.createTournament(this.tournamentForm.value)
+        .subscribe({
+          next: (response) => {
+            console.log('Tournament created successfully', response);
+            this.router.navigate(['/organizer-dashboard']);
+          },
+          error: (error) => {
+            console.error('Error creating tournament', error);
+            alert('Error creating tournament. Please try again.');
+          }
+        });
     } else {
       alert('Please fill out all fields correctly!');
     }
   }
 
-  logout() {
-    // Log out functionality
-    console.log('Logging out');
-    // Add actual logout functionality here (e.g., clear tokens, etc.)
-  }
 }

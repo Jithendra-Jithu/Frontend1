@@ -54,14 +54,24 @@ System.out.println("Received request to update stats for player: " + playerStats
 }
 
 
+    @GetMapping("/getMatchByUserId/{userId}")
+    public Flux<Match> getMatchByUserId(@PathVariable String userId) {
+        return matchService.getMatchByUserId(userId);
+    }
+
+
 
     @GetMapping("/allMatches") //working
     public Flux<Match> allMatches() {
         return matchService.getAllMatches();
     }
 
-    @PostMapping("/createMatch") //working
+    @PostMapping("/createMatch")
     public Mono<Match> createMatch(@RequestBody Match match) {
+        // Add validation for tournament-specific fields
+        if (match.getLocation() == null || match.getTeamSize() == 0 || match.getDate() == null) {
+                return Mono.error(new IllegalArgumentException("Missing required tournament fields"));
+        }
         return matchService.createMatch(match);
     }
 
@@ -93,8 +103,8 @@ System.out.println("Received request to update stats for player: " + playerStats
 
 
     @PutMapping("/endMatch/{id}")
-    public Mono<Match> endMatch(@PathVariable Long id, @RequestBody Match match) {
-        return matchService.endMatch(id, match.getWinner());
+    public Mono<Match> endMatch(@PathVariable Long id) {
+        return matchService.endMatch(id);
     }
 
     // @GetMapping("/getMatchStats/{id}")

@@ -178,7 +178,12 @@ leaderboard() {
   }
 
   logout() {
+    localStorage.clear();
     this.router.navigate(['login']);
+    // localStorage.removeItem('playerData');
+    // localStorage.removeItem('matches');
+    // localStorage.removeItem('userId');
+    // localStorage.removeItem('token');
     console.log('User logged out');
   }
 

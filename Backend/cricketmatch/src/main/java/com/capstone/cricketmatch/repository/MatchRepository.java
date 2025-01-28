@@ -21,4 +21,6 @@ public interface MatchRepository extends ReactiveMongoRepository<Match,Long>{
 
     Flux<Match> findByStatus(String status);
 
+    Flux<Match> findByUserId(String userId);
+
 }

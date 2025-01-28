@@ -1,16 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router'; // Import Router
 import { NavbarComponent } from '../navbar/navbar.component';
+import { MatchService } from '../services/match.service';
 
 // Define the interface for match objects
 interface Match {
   id: number;
-  type: 'ongoing' | 'upcoming' | 'completed'; // Enforce match types
+  type: 'Ongoing' | 'Upcoming' | 'Completed'; // Enforce match types
   name: string;
   location: string;
   date: string;
   image?: string; // Add image property (optional)
+  status: string;
 }
 
 @Component({
@@ -20,40 +22,37 @@ interface Match {
   standalone: true,
   imports: [CommonModule, NavbarComponent],
 })
-export class FansDashboardComponent {
-  constructor(private router: Router) {
+export class FansDashboardComponent implements OnInit {
+  matches: Match[] = [];
+  activeTab: 'Upcoming' | 'Ongoing' | 'Completed' = 'Upcoming';
+
+  constructor(private router: Router, private matchService: MatchService) {
     this.assignRandomImages();
   }
 
-  // Matches data with type annotations
-  matches: Match[] = [
-    { id: 1, type: 'ongoing', name: 'Bharath Box Cricket', location: 'Shapur, Hyderabad', date: '2025-01-23' },
-    { id: 2, type: 'ongoing', name: 'Bharath Box Cricket', location: 'Shapur, Hyderabad', date: '2025-01-23' },
-    { id: 3, type: 'ongoing', name: 'Bharath Box Cricket', location: 'Shapur, Hyderabad', date: '2025-01-23' },
-    { id: 4, type: 'ongoing', name: 'Bharath Box Cricket', location: 'Shapur, Hyderabad', date: '2025-01-23' },
-    { id: 5, type: 'ongoing', name: 'Bharath Box Cricket', location: 'Shapur, Hyderabad', date: '2025-01-23' },
-    { id: 6, type: 'upcoming', name: 'Srujana Cricket Ground', location: 'Kukatpally, Hyderabad', date: '2025-02-01' },
-    { id: 6, type: 'upcoming', name: 'Srujana Cricket Ground', location: 'Kukatpally, Hyderabad', date: '2025-02-06' },
-    { id: 6, type: 'upcoming', name: 'Srujana Cricket Ground', location: 'Kukatpally, Hyderabad', date: '2025-02-08' },
-    { id: 7, type: 'completed', name: 'Green Park Stadium', location: 'Kanpur, UP', date: '2025-01-15' },
-    { id: 7, type: 'completed', name: 'Green Park Stadium', location: 'Kanpur, UP', date: '2025-01-15' },
-    { id: 7, type: 'completed', name: 'Green Park Stadium', location: 'Kanpur, UP', date: '2025-01-15' },
-    { id: 7, type: 'completed', name: 'Green Park Stadium', location: 'Kanpur, UP', date: '2025-01-15' },
-  ];
+  ngOnInit() {
+    this.loadMatches();
+  }
 
-  // Active tab to filter matches
-  activeTab: 'ongoing' | 'upcoming' | 'completed' = 'ongoing';
+  loadMatches() {
+    this.matchService.getAllMatches().subscribe({
+      next: (matches) => {
+        this.matches = matches;
+      },
+      error: (error) => console.error('Error loading matches:', error)
+    });
+  }
 
   // Map match types to multiple images
   matchImages = {
-    ongoing: ['assets/image/live1.jpg', 'assets/image/live2.jpg', 'assets/image/live3.avif', 'assets/image/live4.avif', 'assets/image/live5.jpg'],
-    upcoming: ['assets/image/upc1.webp', 'assets/image/upc2.webp', 'assets/image/upc3.webp', 'assets/image/upc4.webp'],
-    completed: ['assets/image/comp1.webp', 'assets/image/comp2.webp', 'assets/image/comp3.webp', 'assets/image/comp4.webp']
+    Ongoing: ['assets/image/live1.jpg', 'assets/image/live2.jpg', 'assets/image/live3.avif', 'assets/image/live4.avif', 'assets/image/live5.jpg'],
+    Upcoming: ['assets/image/upc1.webp', 'assets/image/upc2.webp', 'assets/image/upc3.webp', 'assets/image/upc4.webp'],
+    Completed: ['assets/image/comp1.webp', 'assets/image/comp2.webp', 'assets/image/comp3.webp', 'assets/image/comp4.webp']
   };
 
   // Get filtered matches based on active tab
   get filteredMatches() {
-    return this.matches.filter((match) => match.type === this.activeTab);
+    return this.matches.filter(match => match.status === this.activeTab);
   }
 
   // Assign random images from the available set and ensure no two consecutive images are the same
@@ -77,5 +76,13 @@ export class FansDashboardComponent {
   // Navigate to match overview
   goToOverview() {
     this.router.navigate(['/match-overview']);
+  }
+
+  handleMatchAction(match: Match) {
+    if (match.status === 'Ongoing') {
+      this.router.navigate(['/match-stats'], { queryParams: { matchId: match.id } });
+    } else if (match.status === 'Completed') {
+      this.router.navigate(['/match-overview'], { queryParams: { matchId: match.id } });
+    }
   }
 }

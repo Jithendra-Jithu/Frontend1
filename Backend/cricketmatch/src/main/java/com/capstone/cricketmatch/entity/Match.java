@@ -9,8 +9,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "matches")
 public class Match {
+    private static Long idCounter = 1L;
+    
     @Id
     private Long id;
+    private String userId;
     private String team1;
     private String team2;
     private Date date;
@@ -21,10 +24,11 @@ public class Match {
     private String code;
     private List<PlayerStats> playerStats;
     
-    public Match(Long id, String team1, String team2, Date date, String location, int teamSize) {
-        this.id = id;
-        this.team1 = team1;
-        this.team2 = team2;
+    public Match(String userId, Date date, String location, int teamSize) {
+        this.id = idCounter++;
+        this.userId = userId;
+        team1 = "Team A";
+        team2 = "Team B";
         this.date = date;
         this.location = location;
         this.teamSize = teamSize;
@@ -32,7 +36,14 @@ public class Match {
         winner = "-";
         status = "Upcoming";
     }
- 
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
     
     public int getTeamSize() {
         return teamSize;

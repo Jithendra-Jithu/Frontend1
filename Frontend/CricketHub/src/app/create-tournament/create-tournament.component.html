@@ -6,8 +6,6 @@
     <h2>Create Tournament</h2>
     
     <form [formGroup]="tournamentForm" (ngSubmit)="onSubmit()">
-      <label for="groundName">Ground Name</label>
-      <input id="groundName" formControlName="groundName" type="text" placeholder="Enter Ground Name" required>
       
     <label for="location">Location</label>
     <input id="location" formControlName="location" type="text" placeholder="Enter Location" required>
@@ -15,8 +13,8 @@
     <label for="teamSize">Team Size</label>
     <input id="teamSize" formControlName="teamSize" type="number" placeholder="Enter Team Size" required>
     
-    <label for="startDate">Start Date</label>
-    <input id="startDate" formControlName="startDate" type="date" required>
+    <label for="date">Date</label>
+    <input id="date" formControlName="date" type="date" required>
 
     <label for="sponsors">Total Number of Sponsors</label>
     <input id="sponsors" formControlName="sponsors" type="number" placeholder="Enter Number of Sponsors" required>

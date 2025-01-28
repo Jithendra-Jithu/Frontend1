@@ -89,21 +89,24 @@ public void updatePlayerStats(String playerId, String teamId, int runsScored, in
     
     public Mono<Match> startMatch(Long id) {
         return matchRepository.findById(id)
-        .flatMap(match -> {
-            match.setStatus("Ongoing");
-            return matchRepository.save(match);
-        })
-        .switchIfEmpty(Mono.error(new RuntimeException("Match not found")));
+            .flatMap(match -> {
+                match.setStatus("Ongoing");
+                return matchRepository.save(match);
+            })
+            .switchIfEmpty(Mono.error(new RuntimeException("Match not found")));
     }
     
-    public Mono<Match> endMatch(Long id,String winner) {
+    public Mono<Match> endMatch(Long id) {
         return matchRepository.findById(id)
-        .flatMap(match -> {
-            match.setStatus("Completed");
-            match.setWinner(winner);
-            return matchRepository.save(match);
-        })
-        .switchIfEmpty(Mono.error(new RuntimeException("Match not found")));
+            .flatMap(match -> {
+                match.setStatus("Completed");
+                return matchRepository.save(match);
+            })
+            .switchIfEmpty(Mono.error(new RuntimeException("Match not found")));
+    }
+
+    public Flux<Match> getMatchByUserId(String userId) {
+        return matchRepository.findByUserId(userId);
     }
 
 }
