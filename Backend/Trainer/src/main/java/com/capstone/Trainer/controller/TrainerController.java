@@ -9,18 +9,18 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/trainers")
+@RequestMapping("api/trainers")
 public class TrainerController {
 
     @Autowired
     private TrainerService trainerService;
 
-    @PostMapping
+    @PostMapping("/createTrainer")
     public Mono<Trainer> addTrainer(@RequestBody Trainer trainer) {
         return trainerService.addTrainer(trainer);
     }
 
-    @GetMapping
+    @GetMapping("/getAllTrainers")
     public Flux<Trainer> getAllTrainers() {
         return trainerService.getAllTrainers();
     }

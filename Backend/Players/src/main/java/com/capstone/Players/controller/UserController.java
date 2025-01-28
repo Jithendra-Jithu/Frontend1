@@ -1,5 +1,7 @@
 package com.capstone.Players.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,6 +95,13 @@ public class UserController {
     public Mono<User> updateTeamId(@PathVariable String userId, @PathVariable String teamId) {
         return userService.updateTeamId(userId, teamId);
     }
+    
+    @GetMapping("/stats")
+public Mono<ResponseEntity<List<PlayerStatsDTO>>> getAllPlayerStats() {
+return userService.getAllPlayerStats()
+.map(ResponseEntity::ok)
+.defaultIfEmpty(ResponseEntity.notFound().build());
+}
 
     
     @PostMapping("/login")

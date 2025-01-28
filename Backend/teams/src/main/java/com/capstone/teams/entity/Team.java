@@ -1,5 +1,6 @@
 package com.capstone.teams.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,20 +17,61 @@ public class Team {
     private int teamScore;
     private int teamWickets;
     private String teamName; // Name of the team
+
+    private String userId;
+private int deliviries;
+private double teamOvers = 0.0;
+private List<ScoreHistory> scoreHistory = new ArrayList<>();
     
     public Team(){        
     }
 
-    public Team(Long id, String matchId, HashMap<String,List<Integer>> team, int teamSize) {
+    public Team(Long id, String matchId, HashMap<String,List<Integer>> team, int teamSize, String userId, int deliviries, double teamOvers, List<ScoreHistory> scoreHistory) {
         this.id = id;
         this.matchId = matchId;
         this.team = team;
         this.teamSize = teamSize;
         teamScore = 0;
         teamWickets = 0;
+        this.userId = userId;
+        this.deliviries = deliviries;
+        this.teamOvers = teamOvers;
+        this.scoreHistory = scoreHistory;
     }
 
 
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public int getDeliviries() {
+        return deliviries;
+    }
+
+    public void setDeliviries(int deliviries) {
+        this.deliviries = deliviries;
+    }
+
+    public double getTeamOvers() {
+        return teamOvers;
+    }
+
+    public void setTeamOvers(double teamOvers) {
+        this.teamOvers = teamOvers;
+    }
+
+    public List<ScoreHistory> getScoreHistory() {
+        return scoreHistory;
+    }
+
+    public void setScoreHistory(List<ScoreHistory> scoreHistory) {
+        this.scoreHistory = scoreHistory;
+    }
 
     public String getTeamName() {
         return teamName;

@@ -16,6 +16,7 @@ import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { AdminLoginComponent } from './adminlogin/adminlogin.component';
 
 import { PlayerSummaryComponent } from './player-summary/player-summary.component';
+import { AdminsignupComponent } from './adminsignup/adminsignup.component';
 
 
 export const routes: Routes = [
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'player-dashboard', component: PlayerDashboardComponent },
   { path: 'player-registration', component: PlayerRegistrationComponent },
   { path: 'match-stats',component: MatchStatsComponent },
+  { path: 'adminsignup',component: AdminsignupComponent },
 
   // New routes for organizer dashboard and match components
   { path: 'organizer-dashboard', component: OrganizerDashboardComponent },

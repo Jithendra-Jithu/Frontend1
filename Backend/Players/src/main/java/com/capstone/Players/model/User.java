@@ -12,7 +12,6 @@ public class User {
     private String userName;
     private String userEmail;
     private String password;
-    private String role;
 
     private String userTeamId="-";
     private int currentScore= 0;
@@ -26,19 +25,20 @@ public class User {
     private int numberOfSupportStaff = 0;
     private int numberOfSponsors = 0;
     private int totalScore = 0;
+    private int totaldeliviries = 0;
     
     // Default constructor
     public User() {}
     
     // Parameterized constructor
-    public User(String userName, String userEmail, String role) {
+    public User(String userName, String userEmail) {
         this.userName = userName;
         this.userEmail = userEmail;
-        this.role = role;
     }
     
     // Getters and Setters
     // ... (same as previously defined)
+
     
     
     public int getCurrentWickets() {
@@ -155,13 +155,6 @@ public class User {
         this.numberOfSponsors = numberOfSponsors;
     }
     
-    public String getRole() {
-        return role;
-    }
-    
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     public int getCurrentScore() {
         return currentScore;
@@ -179,5 +172,13 @@ public class User {
             code.append(possible.charAt(random.nextInt(possible.length())));
         }
         return code.toString();
+    }
+
+    public int getTotaldeliviries() {
+        return totaldeliviries;
+    }
+
+    public void setTotaldeliviries(int totaldeliviries) {
+        this.totaldeliviries = totaldeliviries;
     }
 }

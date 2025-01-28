@@ -10,18 +10,16 @@ public class Trainer {
     private String id;
     private String name;
     private String email;
-    private String phone;
     private String city;
     private String specialization;
     private int experience;
 
     public Trainer() {}
 
-    public Trainer(String id, String name, String email, String phone, String city, String specialization, int experience) {
+    public Trainer(String id, String name, String email, String city, String specialization, int experience) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.phone = phone;
         this.city = city;
         this.specialization = specialization;
         this.experience = experience;
@@ -49,14 +47,6 @@ public class Trainer {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public String getCity() {

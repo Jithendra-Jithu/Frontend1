@@ -3,9 +3,12 @@ package com.capstone.cricketmatch.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.capstone.cricketmatch.KafkaProducerConfig.KafkaProducerConfig;
 import com.capstone.cricketmatch.entity.Match;
+import com.capstone.cricketmatch.entity.PlayerStats;
 import com.capstone.cricketmatch.repository.MatchRepository;
 
 import reactor.core.publisher.Flux;
@@ -18,6 +21,37 @@ public class MatchService {
 
     @Autowired
     private TeamServiceClient teamServiceClient;
+
+    @Autowired
+    private KafkaTemplate<String, PlayerStats> kafkaTemplate;
+
+    @Autowired
+    private KafkaProducerConfig kafkaProducer;
+
+private static final String TOPIC = "match-score";
+
+public void updatePlayerStats(String playerId, String teamId, int runsScored, int wicketsTaken, int deliveries) {
+    try {
+        // Create PlayerStats object
+        PlayerStats stats = new PlayerStats(playerId, teamId, runsScored, wicketsTaken , deliveries);
+
+        // Log the stats being sent
+        System.out.println("Sending stats to Kafka - Player: " + playerId +
+                ", Runs: " + runsScored +
+                ", Wickets: " + wicketsTaken +
+        ", TeamId:"+teamId +
+                ", Deliveries:"+deliveries);
+
+        // Send to Kafka
+        kafkaProducer.sendEntity(TOPIC, stats);
+
+        System.out.println("Successfully sent stats to Kafka for player: " + playerId);
+
+    } catch (Exception e) {
+        System.err.println("Error sending stats to Kafka: " + e.getMessage());
+        throw new RuntimeException("Failed to update player stats", e);
+    }
+}
 
     public Mono<Match> createMatch(Match match) {
         return matchRepository.save(match)

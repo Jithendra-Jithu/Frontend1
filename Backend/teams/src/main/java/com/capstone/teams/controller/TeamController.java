@@ -1,16 +1,20 @@
 package com.capstone.teams.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capstone.teams.dto.TeamCreationRequest;
+import com.capstone.teams.dto.TeamScoreDTO;
+import com.capstone.teams.entity.ScoreHistory;
 import com.capstone.teams.entity.Team;
 import com.capstone.teams.service.TeamService;
 
@@ -30,7 +34,7 @@ public class TeamController {
     }
 
 
-    @PutMapping("/register")
+    @PostMapping("/register")
     public Mono<Team> registerUser(@RequestParam String matchId, @RequestParam String userId, @RequestParam String choice) {
         return teamService.registerUser(matchId, userId, choice);
     }
@@ -39,5 +43,31 @@ public class TeamController {
     public Flux<Team> getTeamDetails(@PathVariable String matchId) {
         return teamService.getTeamDetails(matchId);
     }
+
+    @GetMapping("/{matchId}/{teamName}/score")
+public Mono<TeamScoreDTO> getTeamScore(
+@PathVariable String matchId,
+@PathVariable String teamName) {
+return teamService.getTeamScore(matchId, teamName);
+}
+
+// Optional: Add endpoint to view player stats in a team
+@GetMapping("/{matchId}/{teamName}/player-stats")
+public Mono<Map<String, List<Integer>>> getTeamPlayerStats(
+        @PathVariable String matchId,
+        @PathVariable String teamName) {
+    return teamService.getTeamDetails(matchId)
+            .filter(team -> team.getTeamName().equals(teamName))
+            .next()
+            .map(team -> team.getTeam());
+}
+@GetMapping("/team/score-history/{matchId}/{teamName}")
+public Mono<List<ScoreHistory>> getTeamScoreHistory(
+        @PathVariable String matchId,
+        @PathVariable String teamName
+) {
+    return teamService.getTeamScoreHistory(matchId, teamName);
+}
+
 
 }

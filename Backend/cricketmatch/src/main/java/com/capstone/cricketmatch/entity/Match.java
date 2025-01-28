@@ -1,6 +1,7 @@
 package com.capstone.cricketmatch.entity;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.data.annotation.Id;
@@ -18,6 +19,7 @@ public class Match {
     private String winner;
     private String status;
     private String code;
+    private List<PlayerStats> playerStats;
     
     public Match(Long id, String team1, String team2, Date date, String location, int teamSize) {
         this.id = id;
@@ -102,5 +104,15 @@ public class Match {
             code.append(possible.charAt(random.nextInt(possible.length())));
         }
         return code.toString();
+    }
+
+
+    public List<PlayerStats> getPlayerStats() {
+        return playerStats;
+    }
+
+
+    public void setPlayerStats(List<PlayerStats> playerStats) {
+        this.playerStats = playerStats;
     }
 }

@@ -40,16 +40,15 @@ public class ApiGatewayController {
         }
     
         WebClient webClient = webClientBuilder.baseUrl(baseUrl).build();
+        
+        // Add logging to debug the URL
+        String fullPath = "/api/" + service + remainingPath;
+        System.out.println("Forwarding request to: " + baseUrl + fullPath);
     
         WebClient.RequestBodySpec request = webClient
                 .method(resolveHttpMethod(method))
-                .uri(uriBuilder -> {
-                    uriBuilder.path(remainingPath);
-                    // Forward all query parameters from the original request
-                    exchange.getRequest().getQueryParams().forEach(uriBuilder::queryParam);
-                    return uriBuilder.build();
-                })
-                .header("Content-Type", "application/json"); // Ensure Content-Type is set
+                .uri(fullPath)  // Use the full path including /api/service
+                .header("Content-Type", "application/json");
     
         if (body != null) {
             request.bodyValue(body);
@@ -59,7 +58,11 @@ public class ApiGatewayController {
                 .retrieve()
                 .bodyToMono(Object.class)
                 .map(ResponseEntity::ok)
-                .onErrorResume(error -> Mono.just(ResponseEntity.status(500).body("Error: " + error.getMessage())));
+                .onErrorResume(error -> {
+                    System.err.println("Error in gateway: " + error.getMessage());
+                    error.printStackTrace();
+                    return Mono.just(ResponseEntity.status(500).body("Error: " + error.getMessage()));
+                });
     }
     
     
@@ -87,9 +90,8 @@ public class ApiGatewayController {
 
     private String extractRemainingPath(ServerWebExchange exchange, String service) {
         String fullPath = exchange.getRequest().getPath().pathWithinApplication().value();
-        //String servicePath = "/api/" + service;
-        // return fullPath.substring(servicePath.length());
-        return fullPath;
+        String servicePath = "/api/" + service;
+        return fullPath.substring(servicePath.length()); // This will keep the remaining path after /api/service
     }
 }
 

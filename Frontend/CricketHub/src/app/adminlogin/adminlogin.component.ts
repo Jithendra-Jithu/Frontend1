@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { LoginService } from '../services/login.service';
+import { AdminloginService } from '../services/adminlogin.service';
 
 @Component({
   selector: 'app-adminlogin',
@@ -44,7 +44,7 @@ export class AdminLoginComponent {
     private router: Router,
     private toastr: ToastrService,
     private fb: FormBuilder,
-    private loginService: LoginService
+    private adminLoginService: AdminloginService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -69,13 +69,13 @@ export class AdminLoginComponent {
     const username = this.loginForm.get('username')?.value;
     const password = this.loginForm.get('password')?.value;
 
-    this.loginService.login(username, password).subscribe({
+    this.adminLoginService.login(username, password).subscribe({
       next: (response) => {
         this.isLoading = false;
         if (response && response.token) {
-          this.loginService.setToken(response.token);
-          this.loginService.setUserId(response.userId);
-          this.toastr.success('Login successful!', 'Welcome', {
+          this.adminLoginService.setToken(response.token);
+          this.adminLoginService.setAdminId(response.id);
+          this.toastr.success('Admin login successful!', 'Welcome', {
             positionClass: 'toast-top-center',
             timeOut: 3000,
             progressBar: true,
@@ -109,7 +109,7 @@ export class AdminLoginComponent {
   }
 
   goToRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/adminsignup']);
   }
 
   toggleDarkMode() {

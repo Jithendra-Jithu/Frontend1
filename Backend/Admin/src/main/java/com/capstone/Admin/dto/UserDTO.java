@@ -5,17 +5,14 @@ public class UserDTO {
     private String userId;
     private String userName;
     private String userEmail;
-    private String userPhone;
 
     public UserDTO() {
-
     }
 
-    public UserDTO(String userId, String userName, String userEmail, String userPhone) {
+    public UserDTO(String userId, String userName, String userEmail) {
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
-        this.userPhone = userPhone;
     }
 
     public String getUserId() {
@@ -42,11 +39,4 @@ public class UserDTO {
         this.userEmail = userEmail;
     }
 
-    public String getUserPhone() {
-        return userPhone;
-    }
-
-    public void setUserPhone(String userPhone) {
-        this.userPhone = userPhone;
-    }
 }
