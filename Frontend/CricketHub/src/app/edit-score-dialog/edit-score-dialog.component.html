@@ -1,24 +1,65 @@
-<h2 mat-dialog-title class="text-center text-primary mb-4 font-weight-bold">Edit Score</h2>
+<h2 mat-dialog-title class="text-center text-primary mb-4 font-weight-bold">Edit Player Stats</h2>
 
 <mat-dialog-content>
-  <div class="dialog-content">
-    <p class="text-center mb-3 font-italic text-muted">Editing score for <b>{{ data.name }}</b></p>
-    <div class="form-group">
-      <label for="scoreInput" class="font-weight-bold text-dark">{{ data.fieldToEdit === 'runs' ? 'Runs' : 'Wickets' }}</label>
-      <input
-        id="scoreInput"
-        matInput
-        type="number"
-        [(ngModel)]="data[data.fieldToEdit]"
-        class="form-control form-control-lg rounded-lg border-0 shadow-sm p-3"
-        placeholder="Enter score"
-        min="0"
-      />
-    </div>
-  </div>
+<div class="dialog-content">
+<p class="text-center mb-3 font-italic text-muted">Editing stats for <b>{{ data.name }}</b></p>
+
+<!-- UID Field (Read-only) -->
+<div class="form-group mb-3">
+  <label for="uidInput" class="font-weight-bold text-dark">UID</label>
+  <input
+    id="uidInput"
+    matInput
+    type="text"
+    [value]="data.uid"
+    class="form-control form-control-lg rounded-lg border-0 shadow-sm p-3"
+  
+  />
+</div>
+
+<!-- Team ID Field -->
+<div class="form-group mb-3">
+  <label for="teamIdInput" class="font-weight-bold text-dark">Team ID</label>
+  <input
+    id="teamIdInput"
+    matInput
+    type="text"
+    [(ngModel)]="data.teamId"
+    class="form-control form-control-lg rounded-lg border-0 shadow-sm p-3"
+  />
+</div>
+
+<!-- Runs Field -->
+<div class="form-group mb-3">
+  <label for="runsInput" class="font-weight-bold text-dark">Runs</label>
+  <input
+    id="runsInput"
+    matInput
+    type="number"
+    [(ngModel)]="data.runs"
+    class="form-control form-control-lg rounded-lg border-0 shadow-sm p-3"
+    min="0"
+  />
+</div>
+
+<!-- Wickets Field -->
+<div class="form-group mb-3">
+  <label for="wicketsInput" class="font-weight-bold text-dark">Wickets</label>
+  <input
+    id="wicketsInput"
+    matInput
+    type="number"
+    [(ngModel)]="data.wickets"
+    class="form-control form-control-lg rounded-lg border-0 shadow-sm p-3"
+    min="0"
+  />
+</div>
+</div>
 </mat-dialog-content>
 
 <mat-dialog-actions class="d-flex justify-content-between p-3">
-  <button mat-button class="btn btn-outline-danger px-5 rounded-lg shadow-sm transition-all" (click)="onCancel()">Cancel</button>
-  <button mat-button color="primary" class="btn btn-success px-5 rounded-lg shadow-sm transition-all" (click)="onUpdate()">Update</button>
+<button mat-button class="btn btn-outline-danger px-5 rounded-lg shadow-sm transition-all" (click)="onCancel()">Cancel</button>
+<button mat-button color="primary" class="btn btn-success px-5 rounded-lg shadow-sm transition-all" (click)="onUpdate()">Update</button>
 </mat-dialog-actions>
+
+

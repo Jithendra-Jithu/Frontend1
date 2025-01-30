@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 export class OrganizeService {
   private apiUrl1 = 'http://localhost:8085/api/users'; // Gateway URL for organizer
   private apiUrl2 = 'http://localhost:8085/api/matches'; // Gateway URL for matches
+  private apiUrl3 = 'http://localhost:8085/api/teams'; // Gateway URL for teams
+
 
   constructor(private http: HttpClient) { }
 
@@ -31,7 +33,11 @@ export class OrganizeService {
     return this.http.put(`${this.apiUrl2}/endMatch/${matchId}`, {});
   }
 
-  updateMatchStatus(matchId: string, status: string): Observable<any> {
-    return this.http.put(`${this.apiUrl2}/update-status/${matchId}`, { status });
+  // updateMatchStatus(matchId: string, status: string): Observable<any> {
+  //   return this.http.put(`${this.apiUrl2}/update-status/${matchId}`, { status });
+  // }
+
+  getMatchStats(matchId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl3}/matchStats/${matchId}`);
   }
 }

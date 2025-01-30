@@ -107,10 +107,7 @@ System.out.println("Received request to update stats for player: " + playerStats
         return matchService.endMatch(id);
     }
 
-    // @GetMapping("/getMatchStats/{id}")
-    // public Mono<Match> getMatchStats(@PathVariable Long id) {
-    //     return matchService.getMatchStats(id);
-    // }
+    
 
 
 }

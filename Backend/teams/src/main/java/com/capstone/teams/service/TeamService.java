@@ -252,4 +252,9 @@ private Mono<Team> storePlayerStats(Team team, List<PlayerStatsDTO> playerStats)
                 .next()
                 .map(Team::getScoreHistory);
     }
+
+
+    public Flux<Team> getMatchStats(String matchId) {
+        return teamRepository.findAllByMatchId(matchId);
+    }
 }

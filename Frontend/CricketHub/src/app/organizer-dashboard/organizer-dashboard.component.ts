@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { OrganizeService } from '../services/organize.service';
+import { MatchService } from '../services/match.service';
 
 type Match = {
-  title: string;
   location: string;
   date: Date;
   status: string;
@@ -43,10 +43,12 @@ export class OrganizerDashboardComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private organizeService: OrganizeService
+    private organizeService: OrganizeService,
+    private matchService: MatchService
   ) {
     this.shuffleImages();
   }
+
 
   ngOnInit(): void {
     // Get userId from authentication service or localStorage
@@ -70,12 +72,12 @@ export class OrganizerDashboardComponent implements OnInit {
     this.organizeService.getOrganizerMatches(userId).subscribe({
       next: (matches) => {
         this.matches = matches.map(match => ({
-          title: match.title,
           location: match.location,
           date: new Date(match.date),
           status: match.status,
           id: match.id
         }));
+
         this.assignImagesToCards();
       },
       error: (error) => console.error('Error fetching matches:', error)
@@ -85,13 +87,8 @@ export class OrganizerDashboardComponent implements OnInit {
   handleStatusClick(match: Match): void {
     if (match.status === 'Upcoming') {
       // Call API to start match
-      this.organizeService.updateMatchStatus(match.id.toString(), 'Ongoing').subscribe({
-        next: () => {
-          match.status = 'Ongoing';
-          this.router.navigate(['/match-stats'], { queryParams: { matchId: match.id } });
-        },
-        error: (error: any) => console.error('Error starting match:', error)
-      });
+      this.matchService.startMatch(match.id.toString());
+      this.router.navigate(['/matchStats'], { queryParams: { matchId: match.id } });
     }
   }
 

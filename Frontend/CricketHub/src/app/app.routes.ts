@@ -26,7 +26,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'player-dashboard', component: PlayerDashboardComponent },
   { path: 'player-registration', component: PlayerRegistrationComponent },
-  { path: 'match-stats',component: MatchStatsComponent },
+  { path: 'matchStats',component: MatchStatsComponent },
   { path: 'adminsignup',component: AdminsignupComponent },
 
   // New routes for organizer dashboard and match components

@@ -39,6 +39,13 @@ public class TeamController {
         return teamService.registerUser(matchId, userId, choice);
     }
 
+    @GetMapping("/matchStats/{matchId}")
+    public Flux<Team> getMatchStats(@PathVariable String matchId) {
+        return teamService.getMatchStats(matchId);
+    }
+
+
+
     @GetMapping("/{matchId}")
     public Flux<Team> getTeamDetails(@PathVariable String matchId) {
         return teamService.getTeamDetails(matchId);
