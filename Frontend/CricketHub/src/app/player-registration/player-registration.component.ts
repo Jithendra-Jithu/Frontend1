@@ -3,10 +3,11 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { MatchService } from '../services/match.service';
 @Component({
   selector: 'app-player-registration',
   standalone: true,
-  imports: [CommonModule, FormsModule,NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './player-registration.component.html',
   styleUrls: ['./player-registration.component.css'],
 })
@@ -26,7 +27,10 @@ export class PlayerRegistrationComponent {
   mobileError = '';
   teamError = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private matchService: MatchService
+  ) {}
 
   validateForm(): boolean {
     let valid = true;
@@ -70,15 +74,30 @@ export class PlayerRegistrationComponent {
 
   register() {
     if (this.validateForm()) {
-      this.matchService.registerUser(this.team).subscribe( 
-        (response: any) => {
-          alert('Registration Successful!');
-          this.router.navigate(['/player-dashboard']);
-        },
-        (error: any) => {
-          console.error('Error registering user:', error);
-        }
-      );
+        // Convert positions object to array of selected positions
+        const selectedPositions = Object.entries(this.positions)
+            .filter(([_, selected]) => selected)
+            .map(([position, _]) => position.toUpperCase());
+
+        const playerData = {
+            matchId: localStorage.getItem('matchId'),
+            userId: localStorage.getItem('userId'),
+            userName: this.name,
+            teamName: this.team,
+            positions: selectedPositions
+        };
+
+        this.matchService.registerUser(playerData).subscribe({
+            next: (response) => {
+                console.log('Registration successful:', response);
+                alert('Registration Successful!');
+                this.router.navigate(['/player-dashboard']);
+            },
+            error: (error) => {
+                console.error('Registration error:', error);
+                alert('Registration failed. Please try again.');
+            }
+        });
     }
   }
 

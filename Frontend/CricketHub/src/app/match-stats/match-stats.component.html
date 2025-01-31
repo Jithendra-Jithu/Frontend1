@@ -21,16 +21,17 @@
         <thead class="thead-dark">
           <tr>
             <th>Player ID</th>
-            <th>Score</th>
-            <th>Actions</th>
+            <th>Player Name</th>
+            <th>{{ battingTeam === 'A' ? 'R' : 'W' }}</th>
+            <!-- <th>Status</th> -->
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let entry of teamA.team | keyvalue">
-            <td>{{entry.key}}</td>
-            <td>{{entry.value[0]}}</td>
+          <tr *ngFor="let player of teamA.team | keyvalue">
+            <td>{{player.key}}</td>
+            <td>{{ getPlayerName(player.key) }}</td>
             <td>
-              <mat-icon class="edit-icon" (click)="openEditDialog(teamA, entry.key, battingTeam === 'A' ? 'runs' : 'wickets')">
+              <mat-icon class="edit-icon" (click)="openEditDialog(teamA, player.key, battingTeam === 'A' ? 'runs' : 'wickets')">
                 edit
               </mat-icon>
             </td>
@@ -51,13 +52,13 @@
             <th>Player ID</th>
             <th>Player Name</th>
             <th>{{ battingTeam === 'B' ? 'R' : 'W' }}</th>
-            <th>Actions</th>
+            <!-- <th>Actions</th> -->
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let player of teamB.team | keyvalue">
             <td>{{ player.key }}</td>
-            <td>{{ player.value[1] }}</td>
+            <td>{{ getPlayerName(player.key) }}</td>
             <td>
               <span *ngIf="battingTeam === 'B'">
                 {{ player.value[0] }}

@@ -59,10 +59,36 @@ export class MatchService {
   }
   
   getRegisteredPlayers(id: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl2}/registeredPlayers/${id}`);
+    return this.http.get<any[]>(`${this.apiUrl2}/registeredPlayers/${id}`).pipe(
+      tap(teams => {
+        console.log('Received registered players:', teams);
+      }),
+      catchError(error => {
+        console.error('Error fetching registered players:', error);
+        throw error;
+      })
+    );
   }
 
-  registerUser(team: any): Observable<any> {
-    return this.http.post(`${this.apiUrl2}/register`, team);
+  registerUser(playerData: any): Observable<any> {
+    console.log('Sending registration data:', playerData);
+    
+    // Ensure all required fields are present
+    const registrationData = {
+        matchId: playerData.matchId,
+        userId: playerData.userId,
+        userName: playerData.userName,
+        teamName: playerData.teamName,
+        positions: playerData.positions
+    };
+
+    return this.http.post(`${this.apiUrl2}/register`, registrationData)
+        .pipe(
+            tap(response => console.log('Registration response:', response)),
+            catchError(error => {
+                console.error('Registration error:', error);
+                throw error;
+            })
+        );
   } 
 }

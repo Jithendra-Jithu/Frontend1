@@ -12,8 +12,8 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./registeredplayers.component.css']
 })
 export class RegisteredplayersComponent implements OnInit {
-  teamA: any = { team: {} };
-  teamB: any = { team: {} };
+  teamA: any = { team: {}, teamName: 'Team A' };
+  teamB: any = { team: {}, teamName: 'Team B' };
   matchId: string = '';
 
   constructor(
@@ -22,15 +22,17 @@ export class RegisteredplayersComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.matchId = params['id'];
-      this.loadRegisteredPlayers();
+    this.route.queryParams.subscribe(params => {
+      this.matchId = params['matchId'];
+      if (this.matchId) {
+        this.loadRegisteredPlayers();
+      }
     });
   }
 
   loadRegisteredPlayers() {
-    this.matchService.getRegisteredPlayers(this.matchId).subscribe(
-      (teams: any[]) => {
+    this.matchService.getRegisteredPlayers(this.matchId).subscribe({
+      next: (teams: any[]) => {
         teams.forEach(team => {
           if (team.teamName === 'Team A') {
             this.teamA = team;
@@ -39,9 +41,9 @@ export class RegisteredplayersComponent implements OnInit {
           }
         });
       },
-      error => {
+      error: (error) => {
         console.error('Error loading registered players:', error);
       }
-    );
+    });
   }
 }

@@ -111,19 +111,7 @@ export class PlayerService {
 
   // Get player by specific ID
   getPlayerById(playerId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/userId/${playerId}`).pipe(
-      tap(player => {
-        this.playerCache.set(playerId, player);
-        if (playerId === localStorage.getItem('userId')) {
-          this.updateLocalStorage(player); // Update localStorage if it's the current user
-        }
-      }),
-      catchError(error => {
-        console.error('Error fetching player by ID:', error);
-        return of(null);
-      }),
-      shareReplay(1)
-    );
+    return this.http.get(`${this.apiUrl}/userId/${playerId}`);
   }
 
   // Search players by name

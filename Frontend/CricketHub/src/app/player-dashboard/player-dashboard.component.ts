@@ -179,7 +179,8 @@ export class PlayerDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  playerregistration(): void {
+  playerregistration(matchId: number): void {
+    localStorage.setItem('matchId', matchId.toString());
     this.router.navigate(['/player-registration']);
   }
 

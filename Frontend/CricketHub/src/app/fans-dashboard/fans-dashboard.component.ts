@@ -80,7 +80,7 @@ export class FansDashboardComponent implements OnInit {
 
   handleMatchAction(match: Match) {
     if (match.status === 'Ongoing') {
-      this.router.navigate(['/match-stats'], { queryParams: { matchId: match.id } });
+      this.router.navigate(['/live-score'], { queryParams: { matchId: match.id } });
     } else if (match.status === 'Completed') {
       this.router.navigate(['/match-overview'], { queryParams: { matchId: match.id } });
     }

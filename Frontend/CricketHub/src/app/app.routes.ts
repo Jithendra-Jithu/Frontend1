@@ -18,6 +18,7 @@ import { TrainingComponent } from './training/training.component';
 import { AdminsignupComponent } from './adminsignup/adminsignup.component';
 import { PlayerSummaryComponent } from './player-summary/player-summary.component';
 import { RegisteredplayersComponent } from './registeredplayers/registeredplayers.component';
+import { LiveScoreComponent } from './live-score/live-score.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'crickplay', pathMatch: 'full' },
@@ -42,4 +43,5 @@ export const routes: Routes = [
   { path: 'fans-dashboard',component: FansDashboardComponent},
   { path: 'registered-players', component: RegisteredplayersComponent },
   { path: 'match-stats', component: MatchStatsComponent },
+  { path: 'live-score', component: LiveScoreComponent },
 ];

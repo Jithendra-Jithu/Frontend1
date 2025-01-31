@@ -9,6 +9,8 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { MatchService } from '../services/match.service';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { PlayerService } from '../services/player.service';
+
 
 interface TeamScore {
   teamScore: number;
@@ -69,7 +71,8 @@ matchStatus: any="Ongoing";
     private router: Router,
     private matchService: MatchService,
     private route: ActivatedRoute,
-    private http: HttpClient
+    private http: HttpClient,
+    private playerService: PlayerService
   ) {}
 
   ngOnInit() {
@@ -195,6 +198,20 @@ matchStatus: any="Ongoing";
     } else {
       this.winner = 'It\'s a tie!';
     }
+  }
+
+  getPlayerName(playerId: string): string {
+    // Call your player service to fetch the player name
+    let playerName = 'Unknown Player';
+    this.playerService.getPlayerById(playerId).subscribe(
+      (player) => {
+        playerName = player.userName; // Assuming the player object has a 'name' property
+      },
+      (error) => {
+        console.error('Error fetching player name:', error);
+      }
+    );
+    return playerName;
   }
 }
 

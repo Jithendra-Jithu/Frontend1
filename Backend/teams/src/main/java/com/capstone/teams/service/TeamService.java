@@ -59,30 +59,22 @@ public class TeamService {
     }
     
 
-    public Mono<Team> registerUser(String matchId, String userId, String teamName) {
+    public Mono<Team> registerUser(String matchId, String userId, String teamName, String userName, List<String> positions) {
         return teamRepository.findAllByMatchId(matchId)
                 .filter(team -> {
-                    if (teamName.equals("TeamA") && team.getTeamName().equals("Team A")) {
-                        return team.getTeam().size() < team.getTeamSize();
-                    } else if (teamName.equals("TeamB") && team.getTeamName().equals("Team B")) {
-                        return team.getTeam().size() < team.getTeamSize();
-                    }
-                    return false;
+                    // Exact string comparison instead of hardcoded values
+                    return team.getTeamName().equals(teamName) && 
+                           team.getTeam().size() < team.getTeamSize();
                 })
                 .next()
                 .flatMap(team -> {
-                    // Add user to the chosen team
-                    if ((teamName.equals("TeamA") && team.getTeamName().equals("Team A")) ||
-                            (teamName.equals("TeamB") && team.getTeamName().equals("Team B"))) {
-                        team.getTeam().put(userId, new ArrayList<Integer>());
-                        return teamRepository.save(team)
-                                // Then update the user's team ID
-                                .flatMap(savedTeam ->
-                                        userServiceClient.updateTeam(userId, savedTeam.getId().toString())
-                                                .thenReturn(savedTeam)
-                                );
-                    }
-                    return Mono.just(team);
+                    // Add user to the team without additional team name checks
+                    team.getTeam().put(userId, new ArrayList<Integer>());
+                    return teamRepository.save(team)
+                            .flatMap(savedTeam ->
+                                    userServiceClient.updateTeam(userId, savedTeam.getId().toString())
+                                            .thenReturn(savedTeam)
+                            );
                 })
                 .switchIfEmpty(Mono.error(new RuntimeException("No available teams for match: " + matchId)));
     }
@@ -261,5 +253,6 @@ private Mono<Team> storePlayerStats(Team team, List<PlayerStatsDTO> playerStats)
 
     public Flux<Team> getRegisteredPlayers(String matchId) {
         return teamRepository.findAllByMatchId(matchId);
+        
     }
 }

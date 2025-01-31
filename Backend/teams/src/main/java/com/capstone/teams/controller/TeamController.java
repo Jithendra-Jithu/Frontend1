@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capstone.teams.dto.PlayerRegisterDTO;
 import com.capstone.teams.dto.TeamCreationRequest;
 import com.capstone.teams.dto.TeamScoreDTO;
 import com.capstone.teams.entity.ScoreHistory;
@@ -35,8 +35,15 @@ public class TeamController {
 
 
     @PostMapping("/register")
-    public Mono<Team> registerUser(@RequestBody Team team) {
-        return teamService.registerUser(team.getMatchId(), team.getUserId(), team.getTeamName());
+    public Mono<Team> registerUser(@RequestBody PlayerRegisterDTO playerRegisterDTO) {
+        System.out.println("Received registration request: " + playerRegisterDTO);
+        return teamService.registerUser(
+            playerRegisterDTO.getMatchId(), 
+            playerRegisterDTO.getUserId(), 
+            playerRegisterDTO.getTeamName(),
+            playerRegisterDTO.getUserName(),
+            playerRegisterDTO.getPositions()
+        );
     }
 
     @GetMapping("/matchStats/{matchId}")

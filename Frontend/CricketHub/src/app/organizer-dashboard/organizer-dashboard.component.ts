@@ -111,14 +111,10 @@ export class OrganizerDashboardComponent implements OnInit {
   }
   
   getRegisteredPlayers(match: Match) {
-    this.matchService.getRegisteredPlayers(match.id.toString()).subscribe({  
-      next: (players: any) => {
-        console.log('Registered players:', players);
-        this.router.navigate(['/registered-players'], { queryParams: { matchId: match.id } });
-      },
-      error: (error: any) => console.error('Error fetching registered players:', error)
+    this.router.navigate(['/registered-players'], { 
+      queryParams: { matchId: match.id.toString() }
     });
-  } 
+  }
   // New Method for Redirecting to Create Tournament Page
   navigateToCreateTournament(): void {
     this.router.navigate(['/create-tournament']);
