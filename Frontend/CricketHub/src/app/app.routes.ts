@@ -1,23 +1,23 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+import { OrganizerDashboardComponent } from './organizer-dashboard/organizer-dashboard.component'; // Import OrganizerDashboardComponent
 import { PlayerDashboardComponent } from './player-dashboard/player-dashboard.component';
 import { PlayerRegistrationComponent } from './player-registration/player-registration.component';
-import { OrganizerDashboardComponent } from './organizer-dashboard/organizer-dashboard.component'; // Import OrganizerDashboardComponent
+import { RegisterComponent } from './register/register.component';
 // import { StartMatchComponent } from './start-match/start-match.component'; // Import StartMatchComponent
-import { MatchOverviewComponent } from './match-overview/match-overview.component'; // Import MatchOverviewComponent
-import { CreateTournamentComponent } from './create-tournament/create-tournament.component';
-import { MatchStatsComponent } from './match-stats/match-stats.component';
-import { FansDashboardComponent } from './fans-dashboard/fans-dashboard.component';
-import { TrainingComponent } from './training/training.component';
-import { CricplayComponent } from './cricplay/cricplay.component';
-import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { AdminLoginComponent } from './adminlogin/adminlogin.component';
+import { CreateTournamentComponent } from './create-tournament/create-tournament.component';
+import { CricplayComponent } from './cricplay/cricplay.component';
+import { FansDashboardComponent } from './fans-dashboard/fans-dashboard.component';
+import { LeaderboardComponent } from './leaderboard/leaderboard.component';
+import { MatchOverviewComponent } from './match-overview/match-overview.component'; // Import MatchOverviewComponent
+import { MatchStatsComponent } from './match-stats/match-stats.component';
+import { TrainingComponent } from './training/training.component';
 
-import { PlayerSummaryComponent } from './player-summary/player-summary.component';
 import { AdminsignupComponent } from './adminsignup/adminsignup.component';
-
+import { PlayerSummaryComponent } from './player-summary/player-summary.component';
+import { RegisteredplayersComponent } from './registeredplayers/registeredplayers.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'crickplay', pathMatch: 'full' },
@@ -39,6 +39,7 @@ export const routes: Routes = [
   { path: 'leaderboard',component: LeaderboardComponent },
   { path: 'adminlogin', component: AdminLoginComponent },
   { path: 'player-summary',component: PlayerSummaryComponent},
-  { path: 'fans-dashboard',component: FansDashboardComponent}
-  
+  { path: 'fans-dashboard',component: FansDashboardComponent},
+  { path: 'registered-players', component: RegisteredplayersComponent },
+  { path: 'match-stats', component: MatchStatsComponent },
 ];

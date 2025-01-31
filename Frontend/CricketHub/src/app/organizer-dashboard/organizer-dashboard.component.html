@@ -40,21 +40,33 @@
           <p><i class="fa fa-map-marker"></i> {{ match.location }}</p>
           <p>{{ match.date | date: 'dd-MMM-yyyy' }}</p>
 
-          <!-- Status and Overview Buttons -->
-          <button
+          <div class="btn-space">
+            
+            <!-- Status and Overview Buttons -->
+            <button
             class="action-btn status-btn"
             [ngClass]="{ 'disabled': match.status !== 'Upcoming' }"
             (click)="handleStatusClick(match)"
-          >
+            >
             {{ match.status === 'Upcoming' ? 'START' : match.status }}
           </button>
           <button 
-            class="action-btn overview-btn" 
-            [disabled]="match.status !== 'Completed'"
-            (click)="handleOverviewClick(match)"
+          class="action-btn overview-btn" 
+          [disabled]="match.status !== 'Completed'"
+          (click)="handleOverviewClick(match)"
           >
-            Overview
-          </button>
+          Overview
+        </button>
+        
+        <button 
+        class="action-btn players-btn" 
+        (click)="getRegisteredPlayers(match)"
+        >
+        Registered Players
+      </button>
+      
+    </div>
+          
         </div>
       </div>
     </div>

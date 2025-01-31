@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'; 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +8,36 @@ import { EditScoreDialogComponent } from '../edit-score-dialog/edit-score-dialog
 import { NavbarComponent } from '../navbar/navbar.component';
 import { MatchService } from '../services/match.service';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+
+interface TeamScore {
+  teamScore: number;
+  teamWickets: number;
+  teamOvers: number;
+}
+
+interface Player {
+  playerId: number;
+  name: string;
+  runs: number;
+  wickets: number;
+  isBatting: boolean;
+  isBowling: boolean;
+}
+
+interface Team {
+  id: number;
+  matchId: string;
+  team: { [key: string]: number[] };
+  teamSize: number;
+  teamScore: number;
+  teamWickets: number;
+  teamName: string;
+  userId: string;
+  deliviries: number;
+  teamOvers: number;
+  scoreHistory: any[];
+}
 
 @Component({
 selector: 'app-match-stats',
@@ -22,106 +52,150 @@ MatButtonModule,
 NavbarComponent,
 ],
 })
-export class MatchStatsComponent {
-teamA = [
-{ playerId: 1, name: 'Player A1', runs: 30, wickets: 0, isBatting: true, isBowling: false },
-{ playerId: 2, name: 'Player A2', runs: 50, wickets: 1, isBatting: true, isBowling: false },
-{ playerId: 1, name: 'Player A1', runs: 30, wickets: 0, isBatting: false, isBowling: false },
-{ playerId: 2, name: 'Player A2', runs: 50, wickets: 1, isBatting: false, isBowling: false },
-{ playerId: 1, name: 'Player A1', runs: 30, wickets: 0, isBatting: false, isBowling: false },
-{ playerId: 2, name: 'Player A2', runs: 50, wickets: 1, isBatting: false, isBowling: false },
-{ playerId: 1, name: 'Player A1', runs: 30, wickets: 0, isBatting: false, isBowling: false },
-{ playerId: 2, name: 'Player A2', runs: 50, wickets: 1, isBatting: false, isBowling: false},
-{ playerId: 1, name: 'Player A1', runs: 30, wickets: 0, isBatting: false, isBowling: false },
-{ playerId: 2, name: 'Player A2', runs: 50, wickets: 1, isBatting: false, isBowling: false },
-];
-teamB = [
-{ playerId: 1, name: 'Player B1', runs: 20, wickets: 2, isBatting: false, isBowling: true },
-{ playerId: 2, name: 'Player B2', runs: 40, wickets: 0, isBatting: false, isBowling: true },
-];
-battingTeam: 'A' | 'B' = 'A'; // Tracks which team is batting
-teamsSelected = false; // Tracks if teams have been selected
-inningsCompleted = false; // Tracks if the innings have been completed
-matchEnded = false; // Tracks if the match has ended
-winner = ''; // Stores the match winner
-matchStarted: boolean = false;
+export class MatchStatsComponent implements OnInit {
+  teamA: Team | null = null;
+  teamB: Team | null = null;
+  battingTeam: 'A' | 'B' = 'A';
+  matchId: string = '';
+  teamsSelected = false; // Tracks if teams have been selected
+  inningsCompleted = false; // Tracks if the innings have been completed
+  matchEnded = false; // Tracks if the match has ended
+  winner = ''; // Stores the match winner
+  matchStarted: boolean = false;
+matchStatus: any="Ongoing";
 
-constructor(private dialog: MatDialog,private router: Router, private matchService: MatchService, private route: ActivatedRoute) {}
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+    private matchService: MatchService,
+    private route: ActivatedRoute,
+    private http: HttpClient
+  ) {}
 
-openEditDialog(player: any, fieldToEdit: 'runs' | 'wickets'): void {
-const dialogRef = this.dialog.open(EditScoreDialogComponent, {
-width: '400px', 
-data: {
-uid: player.playerId, // Using playerId as UID
-teamId: this.battingTeam, // Current batting team
-name: player.name,
-runs: player.runs,
-wickets: player.wickets,
-fieldToEdit,
-},
-});
-
-dialogRef.afterClosed().subscribe((result) => {
-  if (result) {
-    // Update all fields from the dialog result
-    player.runs = result.runs;
-    player.wickets = result.wickets;
-    // You might want to add logic here to handle teamId changes if needed
+  ngOnInit() {
+    this.matchId = this.route.snapshot.queryParams['matchId'];
+    this.loadMatchStats();
   }
-  });
-}
 
-// Select teams to start the match
-selectTeams(): void {
-this.battingTeam = this.battingTeam === 'A' ? 'B' : 'A';
-this.teamsSelected = true;
-}
+  loadMatchStats() {
+    // Using the API Gateway URL
+    this.http.get<Team[]>(`http://localhost:8085/api/teams/matchStats/${this.matchId}`).subscribe({
+      next: (teams) => {
+        teams.forEach(team => {
+          if (team.teamName === 'Team A') {
+            this.teamA = team;
+          } else {
+            this.teamB = team;
+          }
+        });
+      },
+      error: (error) => console.error('Error loading match stats:', error)
+    });
+  }
 
-// Switch innings (batting and bowling)
-switchInnings(): void {
-if (!this.inningsCompleted) {
-this.battingTeam = this.battingTeam === 'A' ? 'B' : 'A';
-this.inningsCompleted = true;
-}
-}
+  openEditDialog(team: Team, playerId: string, fieldToEdit: 'runs' | 'wickets'): void {
+    // Get the player's current stats from the team
+    const playerStats = team.team[playerId] || [0, 0]; // [runs, wickets]
+    
+    const dialogRef = this.dialog.open(EditScoreDialogComponent, {
+      width: '400px',
+      data: {
+        uid: playerId,
+        teamId: team.teamName, // Using team name (A or B) instead of batting team
+        name: `Player ${playerId}`,
+        runs: playerStats[0],
+        wickets: playerStats[1],
+        fieldToEdit
+      },
+    });
 
-// Start the match
-startMatch(): void {
-const matchId = this.route.snapshot.queryParams['matchId'];
-this.matchService.startMatch(matchId).subscribe({
-next: () => {
-this.matchStarted = true;
-},
-error: (error) => console.error('Error starting match:', error)
-});
-}
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Update the player's stats in the team
+        team.team[playerId] = [result.runs, result.wickets];
+        
+        // Update team totals if needed
+        if (fieldToEdit === 'runs') {
+          team.teamScore = result.runs;
+        } else if (fieldToEdit === 'wickets') {
+          team.teamWickets = result.wickets;
+        }
+        
+        this.updateTeamScore(team.matchId, team.teamName);
+      }
+    });
+  }
 
-// End the match
-endMatch(): void {
-const matchId = this.route.snapshot.queryParams['matchId'];
-this.matchService.startMatch(matchId.toString()).subscribe({
-next: () => {
-this.matchEnded = true;
-this.calculateWinner();
-this.router.navigate(['/organizer-dashboard']);
-},
-error: (error: any) => console.error('Error ending match:', error)
-});
-}
+  updateTeamScore(matchId: string, teamName: string) {
+    this.http.get<TeamScore>(`http://localhost:8085/api/teams/${matchId}/${teamName}/score`)
+      .subscribe({
+        next: (score) => {
+          if (teamName === 'A' && this.teamA) {
+            this.teamA.teamScore = score.teamScore;
+            this.teamA.teamWickets = score.teamWickets;
+            this.teamA.teamOvers = score.teamOvers;
+          } else if (teamName === 'B' && this.teamB) {
+            this.teamB.teamScore = score.teamScore;
+            this.teamB.teamWickets = score.teamWickets;
+            this.teamB.teamOvers = score.teamOvers;
+          }
+        },
+        error: (error) => console.error('Error updating score:', error)
+      });
+  }
 
-// Calculate the winner based on scores
-calculateWinner(): void {
-const teamAScore = this.teamA.reduce((total, player) => total + player.runs, 0);
-const teamBScore = this.teamB.reduce((total, player) => total + player.runs, 0);
+  // Select teams to start the match
+  selectTeams(): void {
+    this.battingTeam = this.battingTeam === 'A' ? 'B' : 'A';
+    this.teamsSelected = true;
+  }
 
-if (teamAScore > teamBScore) {
-  this.winner = 'Team A wins!';
-} else if (teamBScore > teamAScore) {
-  this.winner = 'Team B wins!';
-} else {
-  this.winner = 'It\'s a tie!';
-}
-}
+  // Switch innings (batting and bowling)
+  switchInnings(): void {
+    if (!this.inningsCompleted) {
+      this.battingTeam = this.battingTeam === 'A' ? 'B' : 'A';
+      this.inningsCompleted = true;
+    }
+  }
+
+  // Start the match
+  startMatch(): void {
+    this.matchService.startMatch(Number(this.matchId)).subscribe({
+      next: () => {
+        this.matchStarted = true;
+        this.matchStatus="Ongoing";
+        this.router.navigate(['/match-stats'], { queryParams: { matchId: this.matchId } });
+      },
+      error: (error) => console.error('Error starting match:', error)
+    });
+  }
+
+  // End the match
+  endMatch(): void {
+    this.matchService.endMatch(Number(this.matchId)).subscribe({
+      next: () => {
+        this.matchEnded = true;
+        this.matchStatus="Completed";
+        this.calculateWinner();
+        this.router.navigate(['/organizer-dashboard']);
+      },
+      error: (error: any) => console.error('Error ending match:', error)
+    });
+  }
+
+  // Calculate the winner based on scores
+  calculateWinner(): void {
+    const teamAScore = this.teamA?.teamScore || 0;
+    const teamBScore = this.teamB?.teamScore || 0;
+
+    if (teamAScore > teamBScore) {
+      this.winner = 'Team A wins!';
+    } else if (teamBScore > teamAScore) {
+      this.winner = 'Team B wins!';
+    } else {
+      this.winner = 'It\'s a tie!';
+    }
+  }
 }
 
 

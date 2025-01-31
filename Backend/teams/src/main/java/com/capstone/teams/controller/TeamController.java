@@ -35,8 +35,8 @@ public class TeamController {
 
 
     @PostMapping("/register")
-    public Mono<Team> registerUser(@RequestParam String matchId, @RequestParam String userId, @RequestParam String choice) {
-        return teamService.registerUser(matchId, userId, choice);
+    public Mono<Team> registerUser(@RequestBody Team team) {
+        return teamService.registerUser(team.getMatchId(), team.getUserId(), team.getTeamName());
     }
 
     @GetMapping("/matchStats/{matchId}")
@@ -75,6 +75,12 @@ public Mono<List<ScoreHistory>> getTeamScoreHistory(
 ) {
     return teamService.getTeamScoreHistory(matchId, teamName);
 }
+
+@GetMapping("/registeredPlayers/{matchId}")
+public Flux<Team> getRegisteredPlayers(@PathVariable String matchId) {
+    return teamService.getRegisteredPlayers(matchId);
+}
+
 
 
 }

@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import reactor.core.publisher.Mono;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", 
+    allowedHeaders = "*", 
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+    allowCredentials = "true")
 @RestController
 @RequestMapping("/api")
 public class ApiGatewayController {
@@ -41,28 +45,29 @@ public class ApiGatewayController {
     
         WebClient webClient = webClientBuilder.baseUrl(baseUrl).build();
         
-        // Add logging to debug the URL
+        // Build URI with query parameters
         String fullPath = "/api/" + service + remainingPath;
-        System.out.println("Forwarding request to: " + baseUrl + fullPath);
-    
-        WebClient.RequestBodySpec request = webClient
-                .method(resolveHttpMethod(method))
-                .uri(fullPath)  // Use the full path including /api/service
-                .header("Content-Type", "application/json");
-    
-        if (body != null) {
-            request.bodyValue(body);
-        }
-    
-        return request
-                .retrieve()
-                .bodyToMono(Object.class)
-                .map(ResponseEntity::ok)
-                .onErrorResume(error -> {
-                    System.err.println("Error in gateway: " + error.getMessage());
-                    error.printStackTrace();
-                    return Mono.just(ResponseEntity.status(500).body("Error: " + error.getMessage()));
+        
+        return webClient
+            .method(resolveHttpMethod(method))
+            .uri(uriBuilder -> {
+                uriBuilder.path(fullPath);
+                // Add all query parameters from the original request
+                exchange.getRequest().getQueryParams().forEach((key, values) -> {
+                    values.forEach(value -> uriBuilder.queryParam(key, value));
                 });
+                return uriBuilder.build();
+            })
+            .headers(headers -> headers.addAll(exchange.getRequest().getHeaders()))
+            .bodyValue(body != null ? body : "")
+            .retrieve()
+            .bodyToMono(Object.class)
+            .map(ResponseEntity::ok)
+            .onErrorResume(error -> {
+                System.err.println("Error in gateway: " + error.getMessage());
+                error.printStackTrace();
+                return Mono.just(ResponseEntity.status(500).body("Error: " + error.getMessage()));
+            });
     }
     
     

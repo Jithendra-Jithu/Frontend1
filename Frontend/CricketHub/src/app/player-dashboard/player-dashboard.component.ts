@@ -65,10 +65,10 @@ export class PlayerDashboardComponent implements OnInit, OnDestroy {
 
   images = [
     'assets/image/player1.avif',
-    'assets/image/player5.avif',
+    'assets/image/player2.jpg',
     'assets/image/player3.jpg',
     'assets/image/player4.jpg',
-    'assets/image/player2.jpg',
+    'assets/image/player5.avif',
   ];
 
   constructor(
@@ -128,7 +128,7 @@ export class PlayerDashboardComponent implements OnInit, OnDestroy {
           return of(null);
         })
       ),
-      matches: this.matchService.getAllMatches().pipe(
+      matches: this.matchService.getMatchesByStatus('Upcoming').pipe(
         catchError(error => {
           console.error('Error loading matches:', error);
           return of([]);

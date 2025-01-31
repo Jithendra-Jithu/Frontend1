@@ -28,9 +28,9 @@ export class OrganizerDashboardComponent implements OnInit {
     sponsors: 0,
     supportStaff: 0,
   };
-
+  
   matches: Match[] = [];
-
+  
   images = [
     'assets/image/org1.png',
     'assets/image/org2.png',
@@ -48,7 +48,7 @@ export class OrganizerDashboardComponent implements OnInit {
   ) {
     this.shuffleImages();
   }
-
+  
 
   ngOnInit(): void {
     // Get userId from authentication service or localStorage
@@ -83,15 +83,25 @@ export class OrganizerDashboardComponent implements OnInit {
       error: (error) => console.error('Error fetching matches:', error)
     });
   }
-
+  
   handleStatusClick(match: Match): void {
     if (match.status === 'Upcoming') {
-      // Call API to start match
-      this.matchService.startMatch(match.id.toString());
-      this.router.navigate(['/matchStats'], { queryParams: { matchId: match.id } });
+      // Call API to start match and subscribe to the response
+      this.matchService.startMatch(match.id).subscribe({
+        next: (updatedMatch) => {
+          console.log('Match started successfully:', updatedMatch);
+          // Update the local match status
+          match.status = 'Ongoing';
+          this.router.navigate(['/matchStats'], { queryParams: { matchId: match.id } });
+        },
+        error: (error) => {
+          console.error('Error starting match:', error);
+          alert('Failed to start match. Please try again.');
+        }
+      });
     }
   }
-
+  
   handleOverviewClick(match: Match): void {
     if (match.status !== 'Completed') {
       alert('Match has not ended yet!');
@@ -99,12 +109,21 @@ export class OrganizerDashboardComponent implements OnInit {
       this.router.navigate(['/match-overview'], { queryParams: { matchId: match.id } });
     }
   }
-
+  
+  getRegisteredPlayers(match: Match) {
+    this.matchService.getRegisteredPlayers(match.id.toString()).subscribe({  
+      next: (players: any) => {
+        console.log('Registered players:', players);
+        this.router.navigate(['/registered-players'], { queryParams: { matchId: match.id } });
+      },
+      error: (error: any) => console.error('Error fetching registered players:', error)
+    });
+  } 
   // New Method for Redirecting to Create Tournament Page
   navigateToCreateTournament(): void {
     this.router.navigate(['/create-tournament']);
   }
-
+  
   shuffleImages(): void {
     // Shuffle the images array to ensure randomness
     for (let i = this.images.length - 1; i > 0; i--) {

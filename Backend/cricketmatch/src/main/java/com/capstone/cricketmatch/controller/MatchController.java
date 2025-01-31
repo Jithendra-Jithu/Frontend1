@@ -107,7 +107,4 @@ System.out.println("Received request to update stats for player: " + playerStats
         return matchService.endMatch(id);
     }
 
-    
-
-
 }

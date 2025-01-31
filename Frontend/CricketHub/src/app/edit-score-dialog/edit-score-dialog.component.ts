@@ -13,7 +13,8 @@ teamId: string;
 name: string;
 runs: number;
 wickets: number;
-fieldToEdit: 'runs' | 'wickets';
+deliveries: number;
+fieldToEdit: 'runs' | 'wickets' | 'deliveries';
 }
 
 @Component({
@@ -44,7 +45,8 @@ this.dialogRef.close({
 uid: this.data.uid,
 teamId: this.data.teamId,
 runs: this.data.runs,
-wickets: this.data.wickets
+wickets: this.data.wickets,
+deliveries: this.data.deliveries
 });
 }
 }

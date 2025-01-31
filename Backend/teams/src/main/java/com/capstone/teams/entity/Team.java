@@ -19,9 +19,9 @@ public class Team {
     private String teamName; // Name of the team
 
     private String userId;
-private int deliviries;
-private double teamOvers = 0.0;
-private List<ScoreHistory> scoreHistory = new ArrayList<>();
+    private int deliviries;
+    private double teamOvers = 0.0;
+    private List<ScoreHistory> scoreHistory = new ArrayList<>();
     
     public Team(){        
     }

@@ -59,12 +59,12 @@ public class TeamService {
     }
     
 
-    public Mono<Team> registerUser(String matchId, String userId, String choice) {
+    public Mono<Team> registerUser(String matchId, String userId, String teamName) {
         return teamRepository.findAllByMatchId(matchId)
                 .filter(team -> {
-                    if (choice.equals("Team A") && team.getTeamName().equals("Team A")) {
+                    if (teamName.equals("TeamA") && team.getTeamName().equals("Team A")) {
                         return team.getTeam().size() < team.getTeamSize();
-                    } else if (choice.equals("Team B") && team.getTeamName().equals("Team B")) {
+                    } else if (teamName.equals("TeamB") && team.getTeamName().equals("Team B")) {
                         return team.getTeam().size() < team.getTeamSize();
                     }
                     return false;
@@ -72,8 +72,8 @@ public class TeamService {
                 .next()
                 .flatMap(team -> {
                     // Add user to the chosen team
-                    if ((choice.equals("Team A") && team.getTeamName().equals("Team A")) ||
-                            (choice.equals("Team B") && team.getTeamName().equals("Team B"))) {
+                    if ((teamName.equals("TeamA") && team.getTeamName().equals("Team A")) ||
+                            (teamName.equals("TeamB") && team.getTeamName().equals("Team B"))) {
                         team.getTeam().put(userId, new ArrayList<Integer>());
                         return teamRepository.save(team)
                                 // Then update the user's team ID
@@ -255,6 +255,11 @@ private Mono<Team> storePlayerStats(Team team, List<PlayerStatsDTO> playerStats)
 
 
     public Flux<Team> getMatchStats(String matchId) {
+        return teamRepository.findAllByMatchId(matchId);
+    }
+
+
+    public Flux<Team> getRegisteredPlayers(String matchId) {
         return teamRepository.findAllByMatchId(matchId);
     }
 }

@@ -88,21 +88,33 @@ public void updatePlayerStats(String playerId, String teamId, int runsScored, in
 
     
     public Mono<Match> startMatch(Long id) {
+        System.out.println("Starting match with ID: " + id);
         return matchRepository.findById(id)
+            .switchIfEmpty(Mono.error(new RuntimeException("Match not found with ID: " + id)))
             .flatMap(match -> {
+                if (!"Upcoming".equals(match.getStatus())) {
+                    return Mono.error(new RuntimeException("Match cannot be started: Invalid status"));
+                }
                 match.setStatus("Ongoing");
-                return matchRepository.save(match);
-            })
-            .switchIfEmpty(Mono.error(new RuntimeException("Match not found")));
+                return matchRepository.save(match)
+                    .doOnSuccess(savedMatch -> System.out.println("Match status updated successfully"))
+                    .doOnError(error -> System.err.println("Error saving match: " + error.getMessage()));
+            });
     }
     
     public Mono<Match> endMatch(Long id) {
+        System.out.println("Ending match with ID: " + id);
         return matchRepository.findById(id)
+            .switchIfEmpty(Mono.error(new RuntimeException("Match not found with ID: " + id)))
             .flatMap(match -> {
+                if (!"Ongoing".equals(match.getStatus())) {
+                    return Mono.error(new RuntimeException("Match cannot be ended: Invalid status"));
+                }
                 match.setStatus("Completed");
-                return matchRepository.save(match);
-            })
-            .switchIfEmpty(Mono.error(new RuntimeException("Match not found")));
+                return matchRepository.save(match)
+                    .doOnSuccess(savedMatch -> System.out.println("Match status updated successfully"))
+                    .doOnError(error -> System.err.println("Error saving match: " + error.getMessage()));
+            });
     }
 
     public Flux<Match> getMatchByUserId(String userId) {

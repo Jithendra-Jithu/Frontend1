@@ -70,8 +70,15 @@ export class PlayerRegistrationComponent {
 
   register() {
     if (this.validateForm()) {
-      alert('Registration Successful!');
-      this.router.navigate(['/player-dashboard']);
+      this.matchService.registerUser(this.team).subscribe( 
+        (response: any) => {
+          alert('Registration Successful!');
+          this.router.navigate(['/player-dashboard']);
+        },
+        (error: any) => {
+          console.error('Error registering user:', error);
+        }
+      );
     }
   }
 
