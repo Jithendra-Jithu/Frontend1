@@ -65,6 +65,7 @@ export class MatchStatsComponent implements OnInit {
   winner = ''; // Stores the match winner
   matchStarted: boolean = false;
 matchStatus: any="Ongoing";
+  playerNames: { [key: string]: string } = {};
 
   constructor(
     private dialog: MatDialog,
@@ -81,7 +82,6 @@ matchStatus: any="Ongoing";
   }
 
   loadMatchStats() {
-    // Using the API Gateway URL
     this.http.get<Team[]>(`http://localhost:8085/api/teams/matchStats/${this.matchId}`).subscribe({
       next: (teams) => {
         teams.forEach(team => {
@@ -91,40 +91,87 @@ matchStatus: any="Ongoing";
             this.teamB = team;
           }
         });
+        this.loadPlayerNames();
       },
       error: (error) => console.error('Error loading match stats:', error)
     });
   }
 
+  loadPlayerNames() {
+    if (this.teamA && this.teamB) {
+      const playerIds = [...Object.keys(this.teamA.team), ...Object.keys(this.teamB.team)];
+      
+      playerIds.forEach(playerId => {
+        this.playerService.getPlayerById(playerId).subscribe({
+          next: (player) => {
+            this.playerNames[playerId] = player.userName;
+          },
+          error: (error) => {
+            console.error(`Error fetching player name for ID ${playerId}:`, error);
+            this.playerNames[playerId] = 'Unknown Player';
+          }
+        });
+      });
+    }
+  }
+
   openEditDialog(team: Team, playerId: string, fieldToEdit: 'runs' | 'wickets'): void {
-    // Get the player's current stats from the team
-    const playerStats = team.team[playerId] || [0, 0]; // [runs, wickets]
-    
+    if (!team.team[playerId]) {
+      team.team[playerId] = [0, 0];
+    }
+
     const dialogRef = this.dialog.open(EditScoreDialogComponent, {
       width: '400px',
       data: {
         uid: playerId,
-        teamId: team.teamName, // Using team name (A or B) instead of batting team
-        name: `Player ${playerId}`,
-        runs: playerStats[0],
-        wickets: playerStats[1],
-        fieldToEdit
+        teamId: team.teamName,
+        name: this.playerNames[playerId] || `Player ${playerId}`,
+        runs: team.team[playerId][0] || 0,
+        wickets: team.team[playerId][1] || 0,
+        deliveries: 1
       },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Update the player's stats in the team
-        team.team[playerId] = [result.runs, result.wickets];
-        
-        // Update team totals if needed
-        if (fieldToEdit === 'runs') {
-          team.teamScore = result.runs;
-        } else if (fieldToEdit === 'wickets') {
-          team.teamWickets = result.wickets;
+        const currentRuns = team.team[playerId][0] || 0;
+        const currentWickets = team.team[playerId][1] || 0;
+        const newRuns = Number(result.runs) || 0;
+        const newWickets = Number(result.wickets) || 0;
+
+        // Update player stats based on whether they're batting or bowling
+        if (team.teamName === `Team ${this.battingTeam}`) {
+          // If it's the batting team, only update runs
+          team.team[playerId][0] = Number(currentRuns) + newRuns;
+          team.teamScore = Number(team.teamScore || 0) + newRuns;
+        } else {
+          // If it's the bowling team, update bowler's wickets
+          team.team[playerId][1] = Number(currentWickets) + newWickets;
+          
+          // Update wickets for the batting team
+          if (this.battingTeam === 'A' && this.teamA) {
+            this.teamA.teamWickets = Number(this.teamA.teamWickets || 0) + newWickets;
+          } else if (this.battingTeam === 'B' && this.teamB) {
+            this.teamB.teamWickets = Number(this.teamB.teamWickets || 0) + newWickets;
+          }
         }
         
-        this.updateTeamScore(team.matchId, team.teamName);
+        // Update overs for the batting team
+        const battingTeam = this.battingTeam === 'A' ? this.teamA : this.teamB;
+        if (battingTeam) {
+          const currentOvers = Math.floor(battingTeam.teamOvers);
+          const currentBalls = Math.round((battingTeam.teamOvers - currentOvers) * 10);
+          
+          if (currentBalls === 5) {
+            battingTeam.teamOvers = currentOvers + 1;
+          } else {
+            battingTeam.teamOvers = Number((currentOvers + (currentBalls + 1) * 0.1).toFixed(1));
+          }
+        }
+
+        // Update both teams' scores in the backend
+        this.updateTeamScore(team.matchId, 'Team A');
+        this.updateTeamScore(team.matchId, 'Team B');
       }
     });
   }
@@ -133,11 +180,11 @@ matchStatus: any="Ongoing";
     this.http.get<TeamScore>(`http://localhost:8085/api/teams/${matchId}/${teamName}/score`)
       .subscribe({
         next: (score) => {
-          if (teamName === 'A' && this.teamA) {
+          if (this.teamA && this.teamA.teamName === teamName) {
             this.teamA.teamScore = score.teamScore;
             this.teamA.teamWickets = score.teamWickets;
             this.teamA.teamOvers = score.teamOvers;
-          } else if (teamName === 'B' && this.teamB) {
+          } else if (this.teamB && this.teamB.teamName === teamName) {
             this.teamB.teamScore = score.teamScore;
             this.teamB.teamWickets = score.teamWickets;
             this.teamB.teamOvers = score.teamOvers;
@@ -201,17 +248,7 @@ matchStatus: any="Ongoing";
   }
 
   getPlayerName(playerId: string): string {
-    // Call your player service to fetch the player name
-    let playerName = 'Unknown Player';
-    this.playerService.getPlayerById(playerId).subscribe(
-      (player) => {
-        playerName = player.userName; // Assuming the player object has a 'name' property
-      },
-      (error) => {
-        console.error('Error fetching player name:', error);
-      }
-    );
-    return playerName;
+    return this.playerNames[playerId] || 'Loading...';
   }
 }
 

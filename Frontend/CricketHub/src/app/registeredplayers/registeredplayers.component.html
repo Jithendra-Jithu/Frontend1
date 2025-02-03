@@ -17,7 +17,7 @@
         <tbody>
           <tr *ngFor="let player of teamA.team | keyvalue">
             <td>{{ player.key }}</td>
-            <td>{{ player.value }}</td>
+            <td>{{ playerNames[player.key] || 'Loading...' }}</td>
           </tr>
         </tbody>
       </table>
@@ -36,7 +36,7 @@
         <tbody>
           <tr *ngFor="let player of teamB.team | keyvalue">
             <td>{{ player.key }}</td>
-            <td>{{ player.value }}</td>
+            <td>{{ playerNames[player.key] || 'Loading...' }}</td>
           </tr>
         </tbody>
       </table>
